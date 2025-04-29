@@ -1,3 +1,5 @@
+#include "io.h"
+
 unsigned short *fb = (unsigned short *) 0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
 #define FB_BLACK 0
@@ -28,11 +30,29 @@ void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg) {
   fb[i] = (bg << 12) | (fg << 8) | c; // Little-endian byte order: [BG/FG, C]
 }
 
+#define FB_COMMAND_PORT 0x3D4
+#define FB_DATA_PORT 0x3D5
+
+#define FB_HIGH_BYTE_COMMAND 14
+#define FB_LOW_BYTE_COMMAND 15
+
+/** fb_move_cursor:
+ * Moves the cursor of the framebuffer to the given position
+ * @param pos The new position of the cursor
+ */
+void fb_move_cursor(unsigned short pos) {
+  outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
+  outb(FB_DATA_PORT, pos >> 8);
+  outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
+  outb(FB_DATA_PORT, pos & 0xFF);
+}
+
 int kmain() {
-  fb_write_cell(0, 'H', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(1, 'e', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(2, 'l', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(3, 'l', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(4, 'o', FB_GREEN, FB_DARK_GREY);
+  fb_write_cell(0, 'H', FB_GREEN, FB_BLACK);
+  fb_write_cell(1, 'e', FB_GREEN, FB_BLACK);
+  fb_write_cell(2, 'l', FB_GREEN, FB_BLACK);
+  fb_write_cell(3, 'l', FB_GREEN, FB_BLACK);
+  fb_write_cell(4, 'o', FB_GREEN, FB_BLACK);
+  fb_move_cursor(5);
   return 0xCAFEBABE;
 }
