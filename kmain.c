@@ -1,3 +1,19 @@
+char *fb = (char *) 0x000B8000; // The memory-mapped I/O address of the framebuffer.
+
+/** fb_write_cell:
+ * Writes a character with the given foreground and background to position i in the framebuffer.
+ * @param i The location in the framebuffer
+ * @param c The character
+ * @param fg The foreground color
+ * @param bg The background color
+ */
+void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg) {
+  fb[i] = c;
+  fb[i + 1] = (fg << 4) | (bg & 0x0F);
+}
+
 int kmain() {
+  fb_write_cell(0, 'A', 2, 8);
+  fb_write_cell(2, 'B', 2, 8);
   return 0xCAFEBABE;
 }
