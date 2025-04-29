@@ -5,3 +5,6 @@
 # ISO directory for built images
 *.iso
 iso/
+
+# Log files
+bochslog.txt
