@@ -37,6 +37,8 @@ void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg)
 #define FB_HIGH_BYTE_COMMAND 14
 #define FB_LOW_BYTE_COMMAND 15
 
+unsigned short cursor_pos = 0;
+
 /** fb_move_cursor:
  * Moves the cursor of the framebuffer to the given position
  * @param pos The new position of the cursor
@@ -47,15 +49,16 @@ void fb_move_cursor(unsigned short pos)
     outb(FB_DATA_PORT, pos >> 8);
     outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
     outb(FB_DATA_PORT, pos & 0xFF);
+    cursor_pos = pos;
 }
 
 void fb_write(char *buf, unsigned int len)
 {
     for (unsigned int i = 0; i < len; i++)
     {
-        fb_write_cell(i, buf[i], FB_WHITE, FB_BLACK);
+        fb_write_cell(cursor_pos + i, buf[i], FB_WHITE, FB_BLACK);
     }
-    fb_move_cursor(len);
+    fb_move_cursor(cursor_pos + len);
 }
 
 #define FB_COLS 80
