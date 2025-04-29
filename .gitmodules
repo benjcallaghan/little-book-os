@@ -1,0 +1,3 @@
+[submodule "Bochs"]
+	path = Bochs
+	url = https://github.com/bochs-emu/Bochs.git
