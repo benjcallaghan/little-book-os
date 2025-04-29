@@ -1,4 +1,4 @@
-char *fb = (char *) 0x000B8000; // The memory-mapped I/O address of the framebuffer.
+unsigned short *fb = (unsigned short *) 0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
 #define FB_BLACK 0
 #define FB_BLUE 1
@@ -21,19 +21,18 @@ char *fb = (char *) 0x000B8000; // The memory-mapped I/O address of the framebuf
  * Writes a character with the given foreground and background to position i in the framebuffer.
  * @param i The location in the framebuffer
  * @param c The character
- * @param fg The foreground color
+ * @param fg The foreground color 
  * @param bg The background color
  */
-void fb_write_cell(unsigned int i, char c, unsigned char bg, unsigned char fg) {
-  fb[i] = c;
-  fb[i + 1] = (fg << 4) | (bg & 0x0F);
+void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg) {
+  fb[i] = (bg << 12) | (fg << 8) | c; // Little-endian byte order: [BG/FG, C]
 }
 
 int kmain() {
   fb_write_cell(0, 'H', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(2, 'e', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(4, 'l', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(6, 'l', FB_GREEN, FB_DARK_GREY);
-  fb_write_cell(8, 'o', FB_GREEN, FB_DARK_GREY);
+  fb_write_cell(1, 'e', FB_GREEN, FB_DARK_GREY);
+  fb_write_cell(2, 'l', FB_GREEN, FB_DARK_GREY);
+  fb_write_cell(3, 'l', FB_GREEN, FB_DARK_GREY);
+  fb_write_cell(4, 'o', FB_GREEN, FB_DARK_GREY);
   return 0xCAFEBABE;
 }
