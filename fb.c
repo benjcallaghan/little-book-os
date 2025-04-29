@@ -49,14 +49,13 @@ void fb_move_cursor(unsigned short pos)
     outb(FB_DATA_PORT, pos & 0xFF);
 }
 
-int fb_write(char *buf, unsigned int len)
+void fb_write(char *buf, unsigned int len)
 {
     for (unsigned int i = 0; i < len; i++)
     {
         fb_write_cell(i, buf[i], FB_WHITE, FB_BLACK);
     }
     fb_move_cursor(len);
-    return 0;
 }
 
 #define FB_COLS 80
