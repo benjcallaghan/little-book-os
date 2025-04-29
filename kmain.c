@@ -1,6 +1,7 @@
 #include "fb.h"
 
 int kmain() {
-  write("Hello, world!", 13);
+  fb_clear();
+  fb_write("Hello, world!", 13);
   return 0xCAFEBABE;
 }

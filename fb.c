@@ -49,7 +49,7 @@ void fb_move_cursor(unsigned short pos)
     outb(FB_DATA_PORT, pos & 0xFF);
 }
 
-int write(char *buf, unsigned int len)
+int fb_write(char *buf, unsigned int len)
 {
     for (unsigned int i = 0; i < len; i++)
     {
@@ -57,4 +57,17 @@ int write(char *buf, unsigned int len)
     }
     fb_move_cursor(len);
     return 0;
+}
+
+#define FB_COLS 80
+#define FB_ROWS 25
+#define FB_CELLS (FB_COLS * FB_ROWS)
+
+void fb_clear()
+{
+    for (unsigned int i = 0; i < FB_CELLS; i++)
+    {
+        fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
+    }
+    fb_move_cursor(0);    
 }

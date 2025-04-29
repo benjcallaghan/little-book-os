@@ -5,4 +5,9 @@
  * @param buf The buffer of characters to write.
  * @param len The length of the buffer
  */
-int write (char *buf, unsigned int len);
+int fb_write(char *buf, unsigned int len);
+
+/**
+ * Clears the framebuffer of all contents
+ */
+void fb_clear();
