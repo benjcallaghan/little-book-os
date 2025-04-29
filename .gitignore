@@ -1,10 +1,7 @@
 # Compiled object files (non-source)
 *.o
 *.elf
-
-# ISO directory for built images
 *.iso
-iso/
 
 # Log files
 bochslog.txt
