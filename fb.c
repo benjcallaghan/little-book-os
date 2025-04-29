@@ -37,6 +37,10 @@ void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg)
 #define FB_HIGH_BYTE_COMMAND 14
 #define FB_LOW_BYTE_COMMAND 15
 
+#define FB_COLS 80
+#define FB_ROWS 25
+#define FB_CELLS (FB_COLS * FB_ROWS)
+
 unsigned short cursor_pos = 0;
 
 /** fb_move_cursor:
@@ -45,6 +49,21 @@ unsigned short cursor_pos = 0;
  */
 void fb_move_cursor(unsigned short pos)
 {
+    if (pos > FB_CELLS)
+    {
+        // Scroll all text up one line
+        for (unsigned int i = 0; i < FB_CELLS - FB_COLS; i++) {
+            fb[i] = fb[i + FB_COLS];
+        }
+
+        // Clear the final line
+        for (unsigned int i = FB_CELLS - FB_COLS; i < FB_CELLS; i++) {
+            fb[i] = 0;
+        }
+
+        pos -= FB_COLS; // Rewind one row
+    }
+
     outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
     outb(FB_DATA_PORT, pos >> 8);
     outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
@@ -56,14 +75,10 @@ void fb_write(char *buf, unsigned int len)
 {
     for (unsigned int i = 0; i < len; i++)
     {
-        fb_write_cell(cursor_pos + i, buf[i], FB_WHITE, FB_BLACK);
+        fb_write_cell(cursor_pos, buf[i], FB_WHITE, FB_BLACK);
+        fb_move_cursor(cursor_pos + 1);
     }
-    fb_move_cursor(cursor_pos + len);
 }
-
-#define FB_COLS 80
-#define FB_ROWS 25
-#define FB_CELLS (FB_COLS * FB_ROWS)
 
 void fb_clear()
 {
@@ -71,5 +86,5 @@ void fb_clear()
     {
         fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
     }
-    fb_move_cursor(0);    
+    fb_move_cursor(0);
 }
