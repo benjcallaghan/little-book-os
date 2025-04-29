@@ -1,5 +1,6 @@
 {
   "recommendations": [
-    "lucianirsigler.nasm"
+    "lucianirsigler.nasm",
+    "zixuanwang.linkerscript"
   ]
 }

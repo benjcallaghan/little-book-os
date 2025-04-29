@@ -1,2 +1,3 @@
 # Compiled object files (non-source)
 *.o
+*.elf
