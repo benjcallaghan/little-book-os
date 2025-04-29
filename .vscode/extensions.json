@@ -1,6 +1,8 @@
 {
   "recommendations": [
     "lucianirsigler.nasm",
-    "zixuanwang.linkerscript"
+    "zixuanwang.linkerscript",
+    "ms-vscode.makefile-tools",
+    "ms-vscode.cpptools-extension-pack"
   ]
 }
