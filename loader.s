@@ -7,6 +7,8 @@ KERNEL_STACK_SIZE equ 4096 ; size of stack in bytes
 
 extern kmain ; the function kmain is defined elsewhere
 
+section .note.GNU-stack noalloc noexec nowrite progbits ; disables execution from the stack
+
 section .bss
 align 4 ; align at 4 bytes
 kernel_stack: ; label points to beginning of memory
