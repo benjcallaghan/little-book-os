@@ -7,6 +7,8 @@
 #define SERIAL_COM1_BASE 0x3F8
 
 #define SERIAL_DATA_PORT(base) (base)
+#define SERIAL_DIVISOR_PORT_LOW(base) (base)
+#define SERIAL_DIVISOR_PORT_HIGH(base) (base + 1)
 #define SERIAL_FIFO_COMMAND_PORT(base) (base + 2)
 #define SERIAL_LINE_COMMAND_PORT(base) (base + 3)
 #define SERIAL_MODEM_COMMAND_PORT(base) (base + 4)
@@ -24,8 +26,8 @@
 void serial_configure_baud_rate(unsigned short com, unsigned short divisor)
 {
   outb(SERIAL_LINE_COMMAND_PORT(com), SERIAL_LINE_ENABLE_DLAB);
-  outb(SERIAL_DATA_PORT(com), divisor >> 8);
-  outb(SERIAL_DATA_PORT(com), divisor & 0xFF);
+  outb(SERIAL_DIVISOR_PORT_HIGH(com), divisor >> 8);
+  outb(SERIAL_DIVISOR_PORT_LOW(com), divisor & 0xFF);
 }
 
 /**
@@ -65,7 +67,7 @@ void serial_configure_modem(unsigned short com)
 
 int serial_is_transmit_fifo_empty(unsigned int com)
 {
-  // 0x20 = Bit 6
+  // 0x20 = Bit 5
   return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20;
 }
 
@@ -77,17 +79,11 @@ void serial_init_com1()
   serial_configure_modem(SERIAL_COM1_BASE);
 }
 
-int serial_write(char *buf, unsigned int len)
+void serial_write(char *buf, unsigned int len)
 {
-  int err = serial_is_transmit_fifo_empty(SERIAL_COM1_BASE);
-  if (err) {
-    return err;
-  }
-
   for (unsigned int i = 0; i < len; i++)
   {
+    while (!serial_is_transmit_fifo_empty(SERIAL_COM1_BASE));
     outb(SERIAL_DATA_PORT(SERIAL_COM1_BASE), buf[i]);
   }
-
-  return 0;
 }

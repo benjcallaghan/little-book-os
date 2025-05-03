@@ -5,3 +5,4 @@
 
 # Log files
 bochslog.txt
+*.out
