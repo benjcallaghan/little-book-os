@@ -16,7 +16,8 @@ struct segment_descriptor_table
 
 const struct segment_descriptor_table gdt;
 
-void load_descriptor(struct segment_descriptor *descriptor, unsigned char target[]) {
+void load_descriptor(struct segment_descriptor *descriptor, unsigned char target[])
+{
     // Encode the limit
     target[0] = descriptor->limit & 0xFF;
     target[1] = (descriptor->limit >> 8) & 0xFF;
@@ -49,21 +50,20 @@ void initialze_segmentation()
         .base = 0,
         .limit = 0xFFFFF,
         .access = 0x9A, // Present, Privilege 0, Code/Data, Executable, Readable
-        .flags = 0xC, // Block Limit, 32-bit
+        .flags = 0xC,   // Block Limit, 32-bit
     };
     load_descriptor(&code, (unsigned char *)(gdt.values + 1));
 
     struct segment_descriptor data = {
         .base = 0,
         .limit = 0xFFFFF,
-        .access = 0x92, // Present, Privilege 0, Code/Data, Writable 
-        .flags = 0xC, // Block Limit, 32-bit
+        .access = 0x92, // Present, Privilege 0, Code/Data, Writable
+        .flags = 0xC,   // Block Limit, 32-bit
     };
     load_descriptor(&data, (unsigned char *)(gdt.values + 2));
 
     struct segment_descriptor_table_descriptor descriptor = {
         .address = (unsigned long)&gdt,
-        .size = sizeof(gdt)
-    };
+        .size = sizeof(gdt)};
     load_global_descriptor_table(&descriptor);
 }

@@ -52,12 +52,14 @@ void fb_move_cursor(unsigned short pos)
     if (pos > FB_CELLS)
     {
         // Scroll all text up one line
-        for (unsigned int i = 0; i < FB_CELLS - FB_COLS; i++) {
+        for (unsigned int i = 0; i < FB_CELLS - FB_COLS; i++)
+        {
             fb[i] = fb[i + FB_COLS];
         }
 
         // Clear the final line
-        for (unsigned int i = FB_CELLS - FB_COLS; i < FB_CELLS; i++) {
+        for (unsigned int i = FB_CELLS - FB_COLS; i < FB_CELLS; i++)
+        {
             fb[i] = 0;
         }
 
