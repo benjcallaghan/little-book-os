@@ -1,7 +1,11 @@
 #include "fb.h"
 #include "serial.h"
+#include "segmentation.h"
 
-int kmain() {
+int kmain()
+{
+  initialze_segmentation();
+
   fb_clear();
   fb_write("Hello, world!", 13);
   fb_write("This", 4);
