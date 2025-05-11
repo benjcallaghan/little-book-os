@@ -7,11 +7,11 @@ int kmain()
     initialze_segmentation();
 
     fb_clear();
-    fb_write("Hello, world!", 13);
-    fb_write("This", 4);
-    fb_write("Is", 2);
-    fb_write("A", 1);
-    fb_write("Test", 4);
+    fb_write("Hello, world!");
+    fb_write("This");
+    fb_write("Is");
+    fb_write("A");
+    fb_write("Test");
 
     serial_init_com1();
     serial_write("This is a longer log written to the serial log file.\n", 53);

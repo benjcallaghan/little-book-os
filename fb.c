@@ -68,11 +68,12 @@ void fb_move_cursor(unsigned short pos)
     cursor_pos = pos;
 }
 
-void fb_write(char *buf, unsigned int len)
+void fb_write(char *str)
 {
-    for (unsigned int i = 0; i < len; i++)
+    char c;
+    while ((c = *str++))
     {
-        fb[cursor_pos] = (struct fb_cell){ .character = buf[i], .foreground_color = FB_WHITE, .background_color = FB_BLACK };
+        fb[cursor_pos] = (struct fb_cell){ .character = c, .foreground_color = FB_WHITE, .background_color = FB_BLACK };
         fb_move_cursor(cursor_pos + 1);
     }
 }
