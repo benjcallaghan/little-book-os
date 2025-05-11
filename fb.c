@@ -1,6 +1,13 @@
 #include "io.h"
 
-unsigned short *fb = (unsigned short *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
+struct fb_cell {
+    char character: 8;
+    unsigned char foreground_color: 4;
+    unsigned char background_color: 4;
+};
+struct fb_cell null_cell = { .character = 0, .foreground_color = 0, .background_color = 0 };
+
+struct fb_cell *fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
 #define FB_BLACK 0
 #define FB_BLUE 1
@@ -28,7 +35,8 @@ unsigned short *fb = (unsigned short *)0x000B8000; // The memory-mapped I/O addr
  */
 void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg)
 {
-    fb[i] = (bg << 12) | (fg << 8) | c; // Little-endian byte order: [BG/FG, C]
+    struct fb_cell cell = { .character = c, .foreground_color = fg, .background_color = bg };
+    fb[i] = cell;
 }
 
 #define FB_COMMAND_PORT 0x3D4
@@ -60,7 +68,7 @@ void fb_move_cursor(unsigned short pos)
         // Clear the final line
         for (unsigned int i = FB_CELLS - FB_COLS; i < FB_CELLS; i++)
         {
-            fb[i] = 0;
+            fb[i] = null_cell;
         }
 
         pos -= FB_COLS; // Rewind one row
@@ -86,7 +94,7 @@ void fb_clear()
 {
     for (unsigned int i = 0; i < FB_CELLS; i++)
     {
-        fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
+        fb[i] = null_cell;
     }
     fb_move_cursor(0);
 }
