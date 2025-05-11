@@ -26,19 +26,6 @@ struct fb_cell *fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O addr
 #define FB_LIGHT_BROWN 14
 #define FB_WHITE 15
 
-/** fb_write_cell:
- * Writes a character with the given foreground and background to position i in the framebuffer.
- * @param i The location in the framebuffer
- * @param c The character
- * @param fg The foreground color
- * @param bg The background color
- */
-void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg)
-{
-    struct fb_cell cell = { .character = c, .foreground_color = fg, .background_color = bg };
-    fb[i] = cell;
-}
-
 #define FB_COMMAND_PORT 0x3D4
 #define FB_DATA_PORT 0x3D5
 
@@ -85,7 +72,7 @@ void fb_write(char *buf, unsigned int len)
 {
     for (unsigned int i = 0; i < len; i++)
     {
-        fb_write_cell(cursor_pos, buf[i], FB_WHITE, FB_BLACK);
+        fb[cursor_pos] = (struct fb_cell){ .character = buf[i], .foreground_color = FB_WHITE, .background_color = FB_BLACK };
         fb_move_cursor(cursor_pos + 1);
     }
 }
