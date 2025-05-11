@@ -1,5 +1,4 @@
 #include "gdt.h"
-#define SEGMENTS 3
 
 struct segment_descriptor
 {
@@ -9,31 +8,18 @@ struct segment_descriptor
     unsigned char flags;
 };
 
-struct segment_descriptor_table
+struct segment_descriptor_table gdt;
+
+void load_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
 {
-    unsigned long long values[SEGMENTS];
-};
+    target->limit_low = (descriptor->limit) & 0xFFFF;
+    target->limit_high = (descriptor->limit >> 16) & 0xFF;
 
-const struct segment_descriptor_table gdt;
+    target->base_low = (descriptor->base) & 0xFFFFFF;
+    target->base_high = (descriptor->base >> 24) & 0xFF;
 
-void load_descriptor(struct segment_descriptor *descriptor, unsigned char target[])
-{
-    // Encode the limit
-    target[0] = descriptor->limit & 0xFF;
-    target[1] = (descriptor->limit >> 8) & 0xFF;
-    target[6] = (descriptor->limit >> 16) & 0x0F;
-
-    // Encode the base
-    target[2] = descriptor->base & 0xFF;
-    target[3] = (descriptor->base >> 8) & 0xFF;
-    target[4] = (descriptor->base >> 16) & 0xFF;
-    target[7] = (descriptor->base >> 24) & 0xFF;
-
-    // Encode the access byte
-    target[5] = descriptor->access;
-
-    // Encode the flags
-    target[6] |= (descriptor->flags << 4);
+    target->access = descriptor->access;
+    target->flags = descriptor->flags;
 }
 
 void initialze_segmentation()
@@ -44,7 +30,7 @@ void initialze_segmentation()
         .access = 0,
         .flags = 0,
     };
-    load_descriptor(&null, (unsigned char *)(gdt.values));
+    load_descriptor(&null, gdt.values);
 
     struct segment_descriptor code = {
         .base = 0,
@@ -52,7 +38,7 @@ void initialze_segmentation()
         .access = 0x9A, // Present, Privilege 0, Code/Data, Executable, Readable
         .flags = 0xC,   // Block Limit, 32-bit
     };
-    load_descriptor(&code, (unsigned char *)(gdt.values + 1));
+    load_descriptor(&code, gdt.values + 1);
 
     struct segment_descriptor data = {
         .base = 0,
@@ -60,10 +46,11 @@ void initialze_segmentation()
         .access = 0x92, // Present, Privilege 0, Code/Data, Writable
         .flags = 0xC,   // Block Limit, 32-bit
     };
-    load_descriptor(&data, (unsigned char *)(gdt.values + 2));
+    load_descriptor(&data, gdt.values + 2);
 
     struct segment_descriptor_table_descriptor descriptor = {
-        .address = (unsigned long)&gdt,
-        .size = sizeof(gdt)};
+        .address = &gdt,
+        .size = sizeof(gdt)
+    };
     load_global_descriptor_table(&descriptor);
 }
