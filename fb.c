@@ -5,9 +5,9 @@ struct fb_cell {
     unsigned char foreground_color: 4;
     unsigned char background_color: 4;
 };
-struct fb_cell null_cell = { .character = 0, .foreground_color = 0, .background_color = 0 };
+const struct fb_cell null_cell = { .character = 0, .foreground_color = 0, .background_color = 0 };
 
-struct fb_cell *fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
+struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
 #define FB_BLACK 0
 #define FB_BLUE 1
@@ -68,7 +68,7 @@ void fb_move_cursor(unsigned short pos)
     cursor_pos = pos;
 }
 
-void fb_write(char *str)
+void fb_write(char const *str)
 {
     char c;
     while ((c = *str++))
