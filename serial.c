@@ -79,12 +79,13 @@ void serial_init_com1()
     serial_configure_modem(SERIAL_COM1_BASE);
 }
 
-void serial_write(char *buf, unsigned int len)
+void serial_write(char const *str)
 {
-    for (unsigned int i = 0; i < len; i++)
+    char c;
+    while ((c = *str++))
     {
         while (!serial_is_transmit_fifo_empty(SERIAL_COM1_BASE))
             ;
-        outb(SERIAL_DATA_PORT(SERIAL_COM1_BASE), buf[i]);
+        outb(SERIAL_DATA_PORT(SERIAL_COM1_BASE), c);
     }
 }

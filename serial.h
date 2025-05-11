@@ -7,7 +7,6 @@ void serial_init_com1();
 
 /** write:
  * Writes a string to the framebuffer.
- * @param buf The buffer of characters to write.
- * @param len The length of the buffer
+ * @param str A null-delimited string.
  */
-void serial_write(char *buf, unsigned int len);
+void serial_write(char const *str);

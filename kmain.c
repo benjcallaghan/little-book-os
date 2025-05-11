@@ -14,8 +14,8 @@ int kmain()
     fb_write("Test");
 
     serial_init_com1();
-    serial_write("This is a longer log written to the serial log file.\n", 53);
-    serial_write("ASCII control characters like LF should be usable here.\n", 56);
+    serial_write("This is a longer log written to the serial log file.\n");
+    serial_write("ASCII control characters like LF should be usable here.\n");
 
     return 0xCAFEBABE;
 }
