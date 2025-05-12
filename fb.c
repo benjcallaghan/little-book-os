@@ -25,7 +25,7 @@ struct fb_cell
     char character : 8;
     enum fb_color foreground_color : 4;
     enum fb_color background_color : 4;
-};
+} __attribute__((packed));
 const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .background_color = 0};
 
 struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
