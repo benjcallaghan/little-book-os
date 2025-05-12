@@ -1,30 +1,34 @@
 #include "io.h"
 
-struct fb_cell {
-    char character: 8;
-    unsigned char foreground_color: 4;
-    unsigned char background_color: 4;
+enum fb_color
+{
+    black = 0,
+    blue = 1,
+    green = 2,
+    cyan = 3,
+    red = 4,
+    magenta = 5,
+    brown = 6,
+    light_grey = 7,
+    dark_grey = 8,
+    light_blue = 9,
+    light_green = 10,
+    light_cyan = 11,
+    light_red = 12,
+    light_magenta = 13,
+    light_brown = 14,
+    white = 15,
 };
-const struct fb_cell null_cell = { .character = 0, .foreground_color = 0, .background_color = 0 };
+
+struct fb_cell
+{
+    char character : 8;
+    enum fb_color foreground_color : 4;
+    enum fb_color background_color : 4;
+};
+const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .background_color = 0};
 
 struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
-
-#define FB_BLACK 0
-#define FB_BLUE 1
-#define FB_GREEN 2
-#define FB_CYAN 3
-#define FB_RED 4
-#define FB_MAGENTA 5
-#define FB_BROWN 6
-#define FB_LIGHT_GREY 7
-#define FB_DARK_GREY 8
-#define FB_LIGHT_BLUE 9
-#define FB_LIGHT_GREEN 10
-#define FB_LIGHT_CYAN 11
-#define FB_LIGHT_RED 12
-#define FB_LIGHT_MAGENTA 13
-#define FB_LIGHT_BROWN 14
-#define FB_WHITE 15
 
 #define FB_COMMAND_PORT 0x3D4
 #define FB_DATA_PORT 0x3D5
@@ -73,7 +77,7 @@ void fb_write(char const *str)
     char c;
     while ((c = *str++))
     {
-        fb[cursor_pos] = (struct fb_cell){ .character = c, .foreground_color = FB_WHITE, .background_color = FB_BLACK };
+        fb[cursor_pos] = (struct fb_cell){.character = c, .foreground_color = white, .background_color = black};
         fb_move_cursor(cursor_pos + 1);
     }
 }
