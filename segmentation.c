@@ -1,5 +1,7 @@
 #include "gdt.h"
 
+#define MAX_SEGMENT_LIMIT 0xFFFFF // largest 20-bit value
+
 struct segment_descriptor
 {
     unsigned long base;
@@ -34,7 +36,7 @@ void initialze_segmentation()
 
     struct segment_descriptor code = {
         .base = 0,
-        .limit = 0xFFFFF,
+        .limit = MAX_SEGMENT_LIMIT,
         .access = present | code_data | executable | readable_or_writable,
         .flags = page_granularity | size_32,
     };
@@ -42,7 +44,7 @@ void initialze_segmentation()
 
     struct segment_descriptor data = {
         .base = 0,
-        .limit = 0xFFFFF,
+        .limit = MAX_SEGMENT_LIMIT,
         .access = present | code_data | readable_or_writable,
         .flags = page_granularity | size_32,
     };
