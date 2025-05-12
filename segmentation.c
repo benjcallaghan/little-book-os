@@ -4,7 +4,7 @@ struct segment_descriptor
 {
     unsigned long base;
     unsigned long limit;
-    unsigned char access;
+    enum segment_access access;
     enum segment_flags flags;
 };
 
@@ -35,7 +35,7 @@ void initialze_segmentation()
     struct segment_descriptor code = {
         .base = 0,
         .limit = 0xFFFFF,
-        .access = 0x9A, // Present, Privilege 0, Code/Data, Executable, Readable
+        .access = present | code_data | executable | readable_or_writable,
         .flags = page_granularity | size_32,
     };
     load_descriptor(&code, gdt.values + 1);
@@ -43,7 +43,7 @@ void initialze_segmentation()
     struct segment_descriptor data = {
         .base = 0,
         .limit = 0xFFFFF,
-        .access = 0x92, // Present, Privilege 0, Code/Data, Writable
+        .access = present | code_data | readable_or_writable,
         .flags = page_granularity | size_32,
     };
     load_descriptor(&data, gdt.values + 2);
