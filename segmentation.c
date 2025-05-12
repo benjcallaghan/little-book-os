@@ -1,5 +1,6 @@
 #include "gdt.h"
 
+#define NUM_SEGMENTS 3
 #define MAX_SEGMENT_LIMIT 0xFFFFF // largest 20-bit value
 
 struct segment_descriptor
@@ -10,7 +11,8 @@ struct segment_descriptor
     enum segment_flags flags;
 };
 
-struct segment_descriptor_table gdt;
+struct segment_descriptor_unsafe global_segments[NUM_SEGMENTS];
+struct segment_descriptor_table global_table = { .size = sizeof global_segments, .segments = global_segments };
 
 void load_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
 {
@@ -32,7 +34,7 @@ void initialze_segmentation()
         .access = 0,
         .flags = 0,
     };
-    load_descriptor(&null, gdt.values);
+    load_descriptor(&null, global_table.segments);
 
     struct segment_descriptor code = {
         .base = 0,
@@ -40,7 +42,7 @@ void initialze_segmentation()
         .access = present | code_data | executable | readable_or_writable,
         .flags = page_granularity | size_32,
     };
-    load_descriptor(&code, gdt.values + 1);
+    load_descriptor(&code, global_table.segments + 1);
 
     struct segment_descriptor data = {
         .base = 0,
@@ -48,11 +50,7 @@ void initialze_segmentation()
         .access = present | code_data | readable_or_writable,
         .flags = page_granularity | size_32,
     };
-    load_descriptor(&data, gdt.values + 2);
+    load_descriptor(&data, global_table.segments + 2);
 
-    struct segment_descriptor_table_descriptor descriptor = {
-        .address = &gdt,
-        .size = sizeof(gdt)
-    };
-    load_global_descriptor_table(&descriptor);
+    load_global_descriptor_table(&global_table);
 }

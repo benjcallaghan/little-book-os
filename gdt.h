@@ -1,7 +1,5 @@
 #pragma once
 
-#define SEGMENTS 3
-
 enum segment_access
 {
     // Must be set for any valid segment
@@ -58,16 +56,11 @@ struct segment_descriptor_unsafe
 
 struct segment_descriptor_table
 {
-    struct segment_descriptor_unsafe values[SEGMENTS];
-};
-
-struct segment_descriptor_table_descriptor
-{
-    unsigned short size;
-    struct segment_descriptor_table const *address;
+    unsigned short size; // Size in bytes, not number of segments.
+    struct segment_descriptor_unsafe *segments;
 } __attribute__((packed));
 
 /**
  * Loads the Global Descriptor Table (GDT) and updates all segment registers.
  */
-void load_global_descriptor_table(struct segment_descriptor_table_descriptor const *descriptor);
+void load_global_descriptor_table(struct segment_descriptor_table const *table);
