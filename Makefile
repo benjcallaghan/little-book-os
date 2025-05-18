@@ -8,8 +8,11 @@ ASFLAGS = -f elf
 .PHONY: all
 all: kernel.elf
 
-kernel.elf: $(OBJECTS)
-	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
+kernel.elf: obj $(OBJECTS)
+	ld $(LDFLAGS) $(addprefix obj/,$(OBJECTS)) -o kernel.elf
+
+obj:
+	mkdir -p obj
 
 os.iso: kernel.elf
 	cp kernel.elf iso/boot/kernel.elf
@@ -19,12 +22,12 @@ os.iso: kernel.elf
 run: os.iso
 	bochs -f bochsrc.txt -q
 
-%.o: %.c
-	$(CC) $(CFLAGS) $< -o $@
+%.o: src/%.c
+	$(CC) $(CFLAGS) $< -o obj/$@
 
-%.o: %.s
-	$(AS) $(ASFLAGS) $< -o $@
+%.o: src/%.s
+	$(AS) $(ASFLAGS) $< -o obj/$@
 
 .PHONY: clean
 clean:
-	rm -rf *.o kernel.elf os.iso
+	rm -rf obj kernel.elf os.iso
