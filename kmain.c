@@ -1,10 +1,12 @@
 #include "fb.h"
 #include "serial.h"
 #include "segmentation.h"
+#include "interrupts.h"
 
 int kmain()
 {
     initialze_segmentation();
+    initialze_interrupts();
 
     fb_clear();
     fb_write("Hello, world!");
