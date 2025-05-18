@@ -14,7 +14,7 @@ struct segment_descriptor
 struct segment_descriptor_unsafe global_segments[NUM_SEGMENTS];
 struct segment_descriptor_table global_table = { .size = sizeof global_segments, .segments = global_segments };
 
-void load_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
+void load_segment_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
 {
     target->limit_low = (descriptor->limit) & 0xFFFF;
     target->limit_high = (descriptor->limit >> 16) & 0xFF;
@@ -34,7 +34,7 @@ void initialze_segmentation()
         .access = 0,
         .flags = 0,
     };
-    load_descriptor(&null, global_table.segments);
+    load_segment_descriptor(&null, global_table.segments);
 
     struct segment_descriptor code = {
         .base = 0,
@@ -42,7 +42,7 @@ void initialze_segmentation()
         .access = present | code_data | executable | readable_or_writable,
         .flags = page_granularity | size_32,
     };
-    load_descriptor(&code, global_table.segments + 1);
+    load_segment_descriptor(&code, global_table.segments + 1);
 
     struct segment_descriptor data = {
         .base = 0,
@@ -50,7 +50,7 @@ void initialze_segmentation()
         .access = present | code_data | readable_or_writable,
         .flags = page_granularity | size_32,
     };
-    load_descriptor(&data, global_table.segments + 2);
+    load_segment_descriptor(&data, global_table.segments + 2);
 
     load_global_descriptor_table(&global_table);
 }

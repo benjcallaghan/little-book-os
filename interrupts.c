@@ -15,7 +15,7 @@ struct interrupt_descriptor
 struct interrupt_descriptor_unsafe interrupts[MAX_INTERRUPTS];
 struct interrupt_descriptor_table table = { .size = sizeof interrupts, .interrupts = interrupts };
 
-void load_descriptor(struct interrupt_descriptor const *descriptor, struct interrupt_descriptor_unsafe *target)
+void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, struct interrupt_descriptor_unsafe *target)
 {
     target->offset_low = descriptor->offset & 0xFFFF;
     target->segment_selector = descriptor->segment_selector;
@@ -45,7 +45,7 @@ void initialze_interrupts()
         .gate_type = interrupt_32,
         .privilege_level = 0
     };
-    load_descriptor(&interrupt_0, interrupts);
+    load_interrupt_descriptor(&interrupt_0, interrupts);
 
     load_interrupt_descriptor_table(&table);
 }
