@@ -6,8 +6,8 @@
 #include "pic.h"
 #include <stddef.h>
 
-#define MAX_INTERRUPTS 14
-#define CODE_SEGMENT 0x08
+constexpr int MAX_INTERRUPTS = 14;
+constexpr int CODE_SEGMENT = 0x08;
 
 struct interrupt_frame
 {

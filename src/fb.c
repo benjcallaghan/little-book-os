@@ -32,15 +32,15 @@ const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .backgr
 
 struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
-#define FB_COMMAND_PORT 0x3D4
-#define FB_DATA_PORT 0x3D5
+constexpr uint16_t FB_COMMAND_PORT = 0x03D4;
+constexpr uint16_t FB_DATA_PORT = 0x03D5;
 
-#define FB_HIGH_BYTE_COMMAND 14
-#define FB_LOW_BYTE_COMMAND 15
+constexpr uint8_t FB_HIGH_BYTE_COMMAND = 14;
+constexpr uint8_t FB_LOW_BYTE_COMMAND = 15;
 
-#define FB_COLS 80
-#define FB_ROWS 25
-#define FB_CELLS (FB_COLS * FB_ROWS)
+constexpr int FB_COLS = 80;
+constexpr int FB_ROWS = 25;
+constexpr int FB_CELLS = (FB_COLS * FB_ROWS);
 
 uint16_t cursor_pos = 0;
 

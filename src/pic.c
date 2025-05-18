@@ -1,13 +1,13 @@
 #include <stdint.h>
 #include "io.h"
 
-#define PIC1 0x20
-#define PIC2 0xA0
-#define PIC1_COMMAND PIC1
-#define PIC1_DATA (PIC1 + 1)
-#define PIC2_COMMAND PIC2
-#define PIC2_DATA (PIC2 + 1)
-#define PIC_ACK 0x20
+constexpr uint16_t PIC1 = 0x20;
+constexpr uint16_t PIC2 = 0xA0;
+constexpr uint16_t PIC1_COMMAND = PIC1;
+constexpr uint16_t PIC1_DATA = (PIC1 + 1);
+constexpr uint16_t PIC2_COMMAND = PIC2;
+constexpr uint16_t PIC2_DATA = (PIC2 + 1);
+constexpr uint8_t PIC_ACK = 0x20;
 
 void pic_acknowledge(uint8_t interrupt)
 {

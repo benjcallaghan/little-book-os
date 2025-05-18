@@ -1,8 +1,8 @@
 #include "gdt.h"
 #include <stddef.h>
 
-#define NUM_SEGMENTS 3
-#define MAX_SEGMENT_LIMIT 0xFFFFF // largest 20-bit value
+constexpr int NUM_SEGMENTS = 3;
+constexpr size_t MAX_SEGMENT_LIMIT = 0xFFFFF; // largest 20-bit value
 
 struct segment_descriptor
 {
