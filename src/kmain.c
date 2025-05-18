@@ -19,6 +19,5 @@ int kmain()
     serial_write("This is a longer log written to the serial log file.\n");
     serial_write("ASCII control characters like LF should be usable here.\n");
 
-    int zero = 0;
-    return 0xCAFEBABE / zero;
+    return 0xCAFEBABE;
 }
