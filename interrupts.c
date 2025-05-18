@@ -25,10 +25,15 @@ void load_descriptor(struct interrupt_descriptor const *descriptor, struct inter
     target->offset_high = (descriptor->offset >> 16) & 0xFFFF;
 }
 
-struct interrupt_frame;
-
-__attribute__((interrupt)) void interrupt_0_handler(struct interrupt_frame *frame)
+struct interrupt_frame
 {
+    unsigned long eflags;
+    unsigned long cs;
+    unsigned long eip;
+};
+
+__attribute__((interrupt)) void interrupt_0_handler(__attribute__((unused)) struct interrupt_frame *frame)
+{        
     serial_write("Someone tried to divide by zero.\n");
 }
 
