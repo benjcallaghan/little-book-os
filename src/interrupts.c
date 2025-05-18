@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "serial.h"
+#include "printf.h"
 
 #define MAX_INTERRUPTS 1
 #define CODE_SEGMENT 0x08
@@ -32,15 +33,16 @@ void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, st
     target->offset_high = ((unsigned long)descriptor->handler >> 16) & 0xFFFF;
 }
 
-__attribute__((interrupt)) void interrupt_0_handler(__attribute__((unused)) struct interrupt_frame const *frame)
+__attribute__((interrupt))
+void div_0_handler(struct interrupt_frame const *frame)
 {        
-    serial_write("Someone tried to divide by zero.\n");
+    printf(serial_write_char, "Someone tried to divide by zero. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
 }
 
 void initialze_interrupts()
 {
     struct interrupt_descriptor interrupt_0 = {
-        .handler = interrupt_0_handler,
+        .handler = div_0_handler,
         .segment_selector = CODE_SEGMENT,
         .gate_type = interrupt_32,
         .privilege_level = 0

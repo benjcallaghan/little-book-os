@@ -1,6 +1,6 @@
-OBJECTS = $(addprefix obj/,loader.o kmain.o io.o fb.o serial.o segmentation.o gdt.o idt.o interrupts.o)
+OBJECTS = $(addprefix obj/,loader.o kmain.o io.o fb.o serial.o segmentation.o gdt.o idt.o interrupts.o printf.o)
 CC = gcc
-CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -std=c2x -mgeneral-regs-only
+CFLAGS = -m32 -nostdlib -ffreestanding -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -std=c2x -mgeneral-regs-only
 LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf
