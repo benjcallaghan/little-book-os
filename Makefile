@@ -5,11 +5,13 @@ LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf
 
+OBJECTFILES = $(addprefix obj/,$(OBJECTS))
+
 .PHONY: all
 all: kernel.elf
 
-kernel.elf: obj $(OBJECTS)
-	ld $(LDFLAGS) $(addprefix obj/,$(OBJECTS)) -o kernel.elf
+kernel.elf: obj $(OBJECTFILES)
+	ld $(LDFLAGS) $(OBJECTFILES) -o kernel.elf
 
 obj:
 	mkdir -p obj
@@ -22,11 +24,11 @@ os.iso: kernel.elf
 run: os.iso
 	bochs -f bochsrc.txt -q
 
-%.o: src/%.c
-	$(CC) $(CFLAGS) $< -o obj/$@
+obj/%.o: src/%.c
+	$(CC) $(CFLAGS) $< -o $@
 
-%.o: src/%.s
-	$(AS) $(ASFLAGS) $< -o obj/$@
+obj/%.o: src/%.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 .PHONY: clean
 clean:
