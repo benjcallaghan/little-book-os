@@ -41,14 +41,14 @@ void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, st
     target->offset_high = ((uintptr_t)descriptor->handler.no_error_code >> 16) & 0xFFFF;
 }
 
-__attribute__((interrupt)) void div_0_handler(struct interrupt_frame const *frame)
+__attribute__((interrupt,target("general-regs-only"))) void div_0_handler(struct interrupt_frame const *frame)
 {
     fb_clear();
     printf(fb_write_char, "#DE EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
     printf(serial_write_char, "Someone tried to divide by zero. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
 }
 
-__attribute__((interrupt)) void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
+__attribute__((interrupt,target("general-regs-only"))) void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
 {
     fb_clear();
     printf(fb_write_char, "#GP CODE=%X,EFLAGS=%X,CS=%X,EIP=%X", error_code, frame->eflags, frame->cs, frame->eip);
