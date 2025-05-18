@@ -1,12 +1,13 @@
 #include "gdt.h"
+#include <stddef.h>
 
 #define NUM_SEGMENTS 3
 #define MAX_SEGMENT_LIMIT 0xFFFFF // largest 20-bit value
 
 struct segment_descriptor
 {
-    unsigned long base;
-    unsigned long limit;
+    uintptr_t base;
+    size_t limit;
     enum segment_access access;
     enum segment_flags flags;
 };

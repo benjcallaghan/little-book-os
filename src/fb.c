@@ -1,4 +1,6 @@
 #include "io.h"
+#include <stddef.h>
+#include <stdint.h>
 
 enum fb_color
 {
@@ -40,24 +42,24 @@ struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/
 #define FB_ROWS 25
 #define FB_CELLS (FB_COLS * FB_ROWS)
 
-unsigned short cursor_pos = 0;
+uint16_t cursor_pos = 0;
 
 /** fb_move_cursor:
  * Moves the cursor of the framebuffer to the given position
  * @param pos The new position of the cursor
  */
-void fb_move_cursor(unsigned short pos)
+void fb_move_cursor(uint16_t pos)
 {
     if (pos > FB_CELLS)
     {
         // Scroll all text up one line
-        for (unsigned int i = 0; i < FB_CELLS - FB_COLS; i++)
+        for (size_t i = 0; i < FB_CELLS - FB_COLS; i++)
         {
             fb[i] = fb[i + FB_COLS];
         }
 
         // Clear the final line
-        for (unsigned int i = FB_CELLS - FB_COLS; i < FB_CELLS; i++)
+        for (size_t i = FB_CELLS - FB_COLS; i < FB_CELLS; i++)
         {
             fb[i] = null_cell;
         }
@@ -89,7 +91,7 @@ void fb_write(char const *str)
 
 void fb_clear()
 {
-    for (unsigned int i = 0; i < FB_CELLS; i++)
+    for (size_t i = 0; i < FB_CELLS; i++)
     {
         fb[i] = null_cell;
     }

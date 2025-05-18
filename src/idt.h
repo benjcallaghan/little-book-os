@@ -1,6 +1,7 @@
 #pragma once
+#include <stdint.h>
 
-enum interrupt_gate_type
+enum interrupt_gate_type : uint8_t
 {
     task_gate = 0x5,
     interrupt_16 = 0x6,
@@ -11,19 +12,19 @@ enum interrupt_gate_type
 
 struct interrupt_descriptor_unsafe
 {
-    unsigned short offset_low : 16;
-    unsigned short segment_selector : 16;
-    unsigned char : 8;
+    uint16_t offset_low : 16;
+    uint16_t segment_selector : 16;
+    uint8_t : 8;
     enum interrupt_gate_type gate_type : 4;
-    unsigned char : 1;
-    unsigned char privilege_level : 2;
+    bool : 1;
+    uint16_t privilege_level : 2;
     bool present : 1;
-    unsigned short offset_high : 16;
+    uint16_t offset_high : 16;
 } __attribute__((packed));
 
 struct interrupt_descriptor_table
 {
-    unsigned short size; // Size in bytes, not number of interrupts
+    uint16_t size; // Size in bytes, not number of interrupts
     struct interrupt_descriptor_unsafe *interrupts;
 } __attribute((packed));
 

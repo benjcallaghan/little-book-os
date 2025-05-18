@@ -1,6 +1,7 @@
 #pragma once
+#include <stdint.h>
 
-enum segment_access
+enum segment_access : uint8_t
 {
     // Must be set for any valid segment
     present = 0x80,
@@ -30,7 +31,7 @@ enum segment_access
     accessed = 0x01,
 };
 
-enum segment_flags
+enum segment_flags : uint8_t
 {
     // When set, the segment's limit field is measured in 4 KiB blocks (i.e. pages).
     // When clear, the limit field is measured in bytes.
@@ -46,17 +47,17 @@ enum segment_flags
 
 struct segment_descriptor_unsafe
 {
-    unsigned short limit_low : 16;
-    unsigned long base_low : 24;
+    uint16_t limit_low : 16;
+    uint32_t base_low : 24;
     enum segment_access access : 8;
-    unsigned char limit_high : 4;
+    uint8_t limit_high : 4;
     enum segment_flags flags : 4;
-    unsigned char base_high : 8;
+    uint8_t base_high : 8;
 } __attribute__((packed));
 
 struct segment_descriptor_table
 {
-    unsigned short size; // Size in bytes, not number of segments.
+    uint16_t size; // Size in bytes, not number of segments.
     struct segment_descriptor_unsafe *segments;
 } __attribute__((packed));
 

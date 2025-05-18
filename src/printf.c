@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stdint.h>
 
 int printf(void (*write)(char), char const *format, ...)
 {
@@ -13,10 +14,10 @@ int printf(void (*write)(char), char const *format, ...)
             switch (*format)
             {
             case 'X':
-                unsigned long arg = va_arg(args, unsigned long);
+                uint32_t arg = va_arg(args, uint32_t);
                 for (int i = 28; i >= 0; i -= 4)
                 {
-                    unsigned char nibble = (arg >> i) & 0xF;
+                    int nibble = (arg >> i) & 0xF;
                     char c = nibble < 10 ? nibble + '0' : nibble - 10 + 'A';
                     write(c);
                     ++bytes_written;
