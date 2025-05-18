@@ -65,7 +65,7 @@ void initialze_interrupts()
         .gate_type = trap_32,
         .privilege_level = 0,
     };
-    load_interrupt_descriptor(&interrupt_13, interrupts + 12);
+    load_interrupt_descriptor(&interrupt_13, interrupts + 13);
 
     load_interrupt_descriptor_table(&table);
 }
