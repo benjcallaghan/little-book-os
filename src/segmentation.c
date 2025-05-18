@@ -13,7 +13,7 @@ struct segment_descriptor
 };
 
 struct segment_descriptor_unsafe global_segments[NUM_SEGMENTS];
-struct segment_descriptor_table global_table = { .size = sizeof global_segments, .segments = global_segments };
+struct segment_descriptor_table global_table = {.size = sizeof global_segments, .segments = global_segments};
 
 void load_segment_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
 {
