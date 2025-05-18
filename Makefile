@@ -1,20 +1,15 @@
-OBJECTS = loader.o kmain.o io.o fb.o serial.o segmentation.o gdt.o idt.o interrupts.o
+OBJECTS = $(addprefix obj/,loader.o kmain.o io.o fb.o serial.o segmentation.o gdt.o idt.o interrupts.o)
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -std=c2x -mgeneral-regs-only
 LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf
 
-OBJECTFILES = $(addprefix obj/,$(OBJECTS))
-
 .PHONY: all
 all: kernel.elf
 
-kernel.elf: obj $(OBJECTFILES)
-	ld $(LDFLAGS) $(OBJECTFILES) -o kernel.elf
-
-obj:
-	mkdir -p obj
+kernel.elf: $(OBJECTS)
+	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
 
 os.iso: kernel.elf
 	cp kernel.elf iso/boot/kernel.elf
@@ -24,11 +19,14 @@ os.iso: kernel.elf
 run: os.iso
 	bochs -f bochsrc.txt -q
 
-obj/%.o: src/%.c
+obj/%.o: src/%.c | obj
 	$(CC) $(CFLAGS) $< -o $@
 
-obj/%.o: src/%.s
+obj/%.o: src/%.s | obj
 	$(AS) $(ASFLAGS) $< -o $@
+
+obj:
+	mkdir -p $@
 
 .PHONY: clean
 clean:
