@@ -10,3 +10,4 @@ section .text
 load_interrupt_descriptor_table:
     mov eax, [esp + 4]
     lidt [eax]
+    ret
