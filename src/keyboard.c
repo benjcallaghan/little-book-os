@@ -87,7 +87,7 @@ uint8_t read_controller_response()
     return inb(controller_data_port);
 }
 
-void initialize_keyboard()
+int initialize_keyboard()
 {
     // TODO: Determine if a PS/2 controller exists.
 
@@ -100,7 +100,7 @@ void initialize_keyboard()
     serial_write("Flushing the PS/2 output buffer.\n");
     inb(controller_data_port);
 
-    // Configure the controller.
+    // Configure the controller with interrupts and translation disabled, and with clocks enabled.
     serial_write("Configuring the PS/2 controller.\n");
     outb(controller_command_port, read_first_byte);
     uint8_t configuration = read_controller_response();
@@ -110,6 +110,17 @@ void initialize_keyboard()
     configuration &= ~first_port_translation;
     outb(controller_command_port, write_first_byte);
     write_controller_data(configuration);
+
+    // Make the controller perform a self-test.
+    outb(controller_command_port, test_controller);
+    uint8_t test_result = read_controller_response();
+    if (test_result != 0x55)
+    {
+        printf(serial_write_char, "Expected PS/2 controller to return a success test result. Received %X.\n", test_result);
+        return 1;
+    }
+
+    return 0;
 }
 
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)

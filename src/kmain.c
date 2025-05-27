@@ -9,7 +9,11 @@ int kmain()
     serial_init_com1();    
     initialze_segmentation();
     initialze_interrupts();
-    initialize_keyboard();
+    
+    int result = initialize_keyboard();
+    if (!result) {
+        return result;
+    }
 
     fb_clear();
     fb_write("Hello, world!");
