@@ -5,16 +5,10 @@
 #include "io.h"
 #include "pic.h"
 #include <stddef.h>
+#include "keyboard.h"
 
-constexpr int MAX_INTERRUPTS = 14;
+constexpr int MAX_INTERRUPTS = 34;
 constexpr int CODE_SEGMENT = 0x08;
-
-struct interrupt_frame
-{
-    uint32_t eflags;
-    uint32_t cs;
-    uint32_t eip;
-};
 
 struct interrupt_descriptor
 {
@@ -76,6 +70,14 @@ void initialze_interrupts()
         .privilege_level = 0,
     };
     load_interrupt_descriptor(&interrupt_13, interrupts + 13);
+
+    struct interrupt_descriptor interrupt_33 = {
+        .handler = {keyboard_interrupt_handler},
+        .segment_selector = CODE_SEGMENT,
+        .gate_type = trap_32,
+        .privilege_level = 0
+    };
+    load_interrupt_descriptor(&interrupt_33, interrupts + 33);
 
     load_interrupt_descriptor_table(&table);
 }

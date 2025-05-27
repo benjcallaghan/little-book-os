@@ -85,7 +85,7 @@ void pic_intialize()
     outb(PIC2_DATA, word_4);
 
     // Word 5 = Bitmask of disabled interrupts (set = disabled, clear = enabled)
-    enum pic1_interrupts pic1_enabled = pic2;
+    enum pic1_interrupts pic1_enabled = pic2 | keyboard;
     enum pic2_interrupts pic2_enabled = pic2_none;
     outb(PIC1_DATA, ~pic1_enabled);
     outb(PIC2_DATA, ~pic2_enabled);
