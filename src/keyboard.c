@@ -174,10 +174,21 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
     if (scan_code_pos > 0)
     {
         // We're already in a multi-byte scan code.
+        in_progress_scan_code[scan_code_pos++] = scan_code;        
+
+        // This is the end of the multi-byte scan code.
+        printf(serial_write_char, "Complete scan code ");
+        for (size_t i = 0; i < scan_code_pos; i++)
+        {
+            printf(serial_write_char, "%X", in_progress_scan_code[i]);
+        }
+        printf(serial_write_char, "\n");
+        reset_scan_code();
     }
     else if (scan_code == 0xE0 || scan_code == 0xE1)
     {
         // This is the start of multi-byte scan code.
+        in_progress_scan_code[scan_code_pos++] = scan_code;
     }
     else
     {

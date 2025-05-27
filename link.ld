@@ -5,6 +5,7 @@ SECTIONS {
 
   .text ALIGN (0x1000) : /* align at 4 KB */
   {
+    obj/loader.o(.text) /* Place loader.o first so it's magic numbers are reachable by GRUB */
     *(.text) /* all text sections from all files */
   }
 

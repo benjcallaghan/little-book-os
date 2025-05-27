@@ -10,7 +10,7 @@ ASFLAGS := -f elf
 .PHONY: all
 all: kernel.elf
 
-kernel.elf: $(OBJECTS)
+kernel.elf: $(OBJECTS) link.ld
 	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
 
 os.iso: kernel.elf
