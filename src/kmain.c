@@ -15,15 +15,11 @@ int kmain()
         return error;
     }
 
-    initialze_interrupts();
     pic_initialze();
+    initialze_interrupts();
 
     fb_clear();
     fb_write("Hello, world!");
-    fb_write("This");
-    fb_write("Is");
-    fb_write("A");
-    fb_write("Test");
 
     serial_write("This is a longer log written to the serial log file.\n");
     serial_write("ASCII control characters like LF should be usable here.\n");
