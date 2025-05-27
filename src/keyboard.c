@@ -120,6 +120,13 @@ int initialize_keyboard()
         return 1;
     }
 
+    // Enable first port, with interrupts
+    serial_write("Enabling the first PS/2 port, with interrupts.\n");
+    outb(controller_command_port, enable_first_port);
+    configuration |= first_port_interrupt;
+    outb(controller_command_port, write_first_byte);
+    write_controller_data(configuration);
+
     return 0;
 }
 
