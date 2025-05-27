@@ -2,6 +2,7 @@
 #include "serial.h"
 #include "segmentation.h"
 #include "interrupts.h"
+#include "pic.h"
 #include "keyboard.h"
 
 int kmain()
@@ -13,8 +14,9 @@ int kmain()
     if (error) {
         return error;
     }
-    
+
     initialze_interrupts();
+    pic_intialize();
 
     fb_clear();
     fb_write("Hello, world!");

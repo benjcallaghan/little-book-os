@@ -53,31 +53,29 @@ __attribute__((interrupt, target("general-regs-only"))) void general_protection_
 
 void initialze_interrupts()
 {
-    pic_intialize();
-
-    struct interrupt_descriptor interrupt_0 = {
+    struct interrupt_descriptor interrupt_x00 = {
         .handler = {div_0_handler},
         .segment_selector = CODE_SEGMENT,
         .gate_type = trap_32,
         .privilege_level = 0,
     };
-    load_interrupt_descriptor(&interrupt_0, interrupts);
+    load_interrupt_descriptor(&interrupt_x00, interrupts + 0x00);
 
-    struct interrupt_descriptor interrupt_13 = {
+    struct interrupt_descriptor interrupt_x0d = {
         .handler = {.with_error_code = general_protection_fault_handler},
         .segment_selector = CODE_SEGMENT,
         .gate_type = trap_32,
         .privilege_level = 0,
     };
-    load_interrupt_descriptor(&interrupt_13, interrupts + 13);
+    load_interrupt_descriptor(&interrupt_x0d, interrupts + 0x0D);
 
-    struct interrupt_descriptor interrupt_33 = {
+    struct interrupt_descriptor interrupt_x21 = {
         .handler = {keyboard_interrupt_handler},
         .segment_selector = CODE_SEGMENT,
         .gate_type = trap_32,
         .privilege_level = 0
     };
-    load_interrupt_descriptor(&interrupt_33, interrupts + 33);
+    load_interrupt_descriptor(&interrupt_x21, interrupts + 0x21);
 
     load_interrupt_descriptor_table(&table);
 }
