@@ -64,7 +64,7 @@ enum pic2_interrupts : uint8_t
     secondary_disk = 0x80,
 };
 
-void pic_intialize()
+void pic_initialze()
 {
     // Word 1 = Initialize
     enum pic_initialize_command word_1 = init | word_4;

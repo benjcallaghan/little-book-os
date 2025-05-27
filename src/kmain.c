@@ -16,7 +16,7 @@ int kmain()
     }
 
     initialze_interrupts();
-    pic_intialize();
+    pic_initialze();
 
     fb_clear();
     fb_write("Hello, world!");
