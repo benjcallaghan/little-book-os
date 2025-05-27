@@ -127,6 +127,23 @@ int initialize_keyboard()
     outb(controller_command_port, write_first_byte);
     write_controller_data(configuration);
 
+    // Reset the first port's device
+    serial_write("Resetting the keyboard plugged into PS/2 port 1.\n");
+    write_controller_data(reset_and_test);
+    uint8_t keyboard_result = read_controller_response();
+    if (keyboard_result != 0xFA)
+    {
+        printf(serial_write_char, "The keyboard did not positively acknowledge the reset command. Result %X\n", keyboard_result);
+        return 2;
+    }
+
+    keyboard_result = read_controller_response();
+    if (keyboard_result != 0xAA)
+    {
+        printf(serial_write_char, "The keyboard's self-test failed. Result %X\n", keyboard_result);
+        return 2;
+    }
+
     return 0;
 }
 

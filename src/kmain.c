@@ -8,12 +8,13 @@ int kmain()
 {
     serial_init_com1();    
     initialze_segmentation();
-    initialze_interrupts();
     
     int error = initialize_keyboard();
     if (error) {
         return error;
     }
+    
+    initialze_interrupts();
 
     fb_clear();
     fb_write("Hello, world!");
