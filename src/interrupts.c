@@ -41,7 +41,14 @@ __attribute__((interrupt, target("general-regs-only"))) void div_0_handler(struc
 {
     fb_clear();
     printf(fb_write_char, "#DE EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
-    printf(serial_write_char, "Someone tried to divide by zero. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
+    printf(serial_write_char, "ERROR: Divide Error. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
+}
+
+__attribute__((interrupt, target("general-regs-only"))) void debug_handler(struct interrupt_frame const *frame)
+{
+    fb_clear();
+    printf(fb_write_char, "#DB EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
+    printf(serial_write_char, "ERROR: Debug Exception. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
 }
 
 __attribute__((interrupt, target("general-regs-only"))) void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
@@ -61,6 +68,14 @@ void initialze_interrupts()
     };
     load_interrupt_descriptor(&interrupt_x00, interrupts + 0x00);
 
+    struct interrupt_descriptor interrupt_x01 = {
+        .handler = {debug_handler},
+        .segment_selector = CODE_SEGMENT,
+        .gate_type = trap_32,
+        .privilege_level = 0,
+    };
+    load_interrupt_descriptor(&interrupt_x01, interrupts + 0x01);
+
     struct interrupt_descriptor interrupt_x0d = {
         .handler = {.with_error_code = general_protection_fault_handler},
         .segment_selector = CODE_SEGMENT,
@@ -73,8 +88,7 @@ void initialze_interrupts()
         .handler = {keyboard_interrupt_handler},
         .segment_selector = CODE_SEGMENT,
         .gate_type = trap_32,
-        .privilege_level = 0
-    };
+        .privilege_level = 0};
     load_interrupt_descriptor(&interrupt_x21, interrupts + 0x21);
 
     load_interrupt_descriptor_table(&table);
