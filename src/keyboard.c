@@ -4,10 +4,15 @@
 #include "io.h"
 #include "printf.h"
 #include <stdint.h>
+#include <stddef.h>
 
 constexpr uint8_t keyboard_pic_interrupt = 1;
 constexpr uint16_t controller_data_port = 0x60;
 constexpr uint16_t controller_command_port = 0x64;
+constexpr int largest_scan_code = 6;
+
+uint8_t in_progress_scan_code[largest_scan_code];
+size_t scan_code_pos = 0;
 
 enum controller_command : uint8_t
 {
@@ -62,6 +67,15 @@ enum keyboard_command : uint8_t
     resend = 0xFE,
     reset_and_test = 0xFF,
 };
+
+void reset_scan_code()
+{
+    for (int i = 0; i < largest_scan_code; i++)
+    {
+        in_progress_scan_code[i] = 0;
+    }
+    scan_code_pos = 0;
+}
 
 bool input_buffer_full()
 {
@@ -149,12 +163,27 @@ int initialize_keyboard()
         return 2;
     }
 
+    reset_scan_code();
     return 0;
 }
 
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
 {
     uint8_t scan_code = quick_read_controller_response();
-    printf(serial_write_char, "Received scan code %X\n", scan_code);
+
+    if (scan_code_pos > 0)
+    {
+        // We're already in a multi-byte scan code.
+    }
+    else if (scan_code == 0xE0 || scan_code == 0xE1)
+    {
+        // This is the start of multi-byte scan code.
+    }
+    else
+    {
+        // This is a complete single-byte scan code.
+        printf(serial_write_char, "Complete scan code %X\n", scan_code);
+    }
+
     pic_acknowledge(keyboard_pic_interrupt);
 }
