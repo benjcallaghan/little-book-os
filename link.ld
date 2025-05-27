@@ -21,6 +21,7 @@ SECTIONS {
 
   .bss ALIGN (0x1000): /* align at 4 KB */
   {
+    obj/loader.o(.bss)
     *(COMMON) /* all COMMON sections from all files */
     *(.bss) /* all bss sections from all files */
   }
