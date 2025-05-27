@@ -2,11 +2,14 @@
 #include "serial.h"
 #include "segmentation.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 int kmain()
 {
+    serial_init_com1();    
     initialze_segmentation();
     initialze_interrupts();
+    initialize_keyboard();
 
     fb_clear();
     fb_write("Hello, world!");
@@ -15,7 +18,6 @@ int kmain()
     fb_write("A");
     fb_write("Test");
 
-    serial_init_com1();
     serial_write("This is a longer log written to the serial log file.\n");
     serial_write("ASCII control characters like LF should be usable here.\n");
 
