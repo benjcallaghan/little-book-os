@@ -10,4 +10,5 @@ section .text
 load_interrupt_descriptor_table:
     mov eax, [esp + 4]
     lidt [eax]
+    sti ; enable hardware interrupts from the PIC
     ret
