@@ -110,6 +110,16 @@ int initialize_keyboard()
     outb(controller_command_port, write_first_byte);
     write_controller_data(configuration);
 
+    // Test the first port (we don't care about the second right now).
+    serial_write("Testing the first PS/2 port.\n");
+    outb(controller_command_port, test_first_port);
+    uint8_t first_port_results = read_controller_response();
+    if (first_port_results)
+    {
+        printf(serial_write_char, "The first PS/2 port failed its initialization test. Result %X\n", first_port_results);
+        return 1;
+    }
+
     return 0;
 }
 

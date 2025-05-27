@@ -10,9 +10,9 @@ int kmain()
     initialze_segmentation();
     initialze_interrupts();
     
-    int result = initialize_keyboard();
-    if (!result) {
-        return result;
+    int error = initialize_keyboard();
+    if (error) {
+        return error;
     }
 
     fb_clear();
