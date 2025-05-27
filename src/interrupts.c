@@ -87,7 +87,7 @@ void initialze_interrupts()
     struct interrupt_descriptor interrupt_x21 = {
         .handler = {keyboard_interrupt_handler},
         .segment_selector = CODE_SEGMENT,
-        .gate_type = trap_32,
+        .gate_type = interrupt_32,
         .privilege_level = 0};
     load_interrupt_descriptor(&interrupt_x21, interrupts + 0x21);
 
