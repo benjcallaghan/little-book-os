@@ -87,6 +87,11 @@ uint8_t read_controller_response()
     return inb(controller_data_port);
 }
 
+uint8_t quick_read_controller_response()
+{
+    return inb(controller_data_port);
+}
+
 int initialize_keyboard()
 {
     // TODO: Determine if a PS/2 controller exists.
@@ -149,7 +154,7 @@ int initialize_keyboard()
 
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
 {
-    // uint8_t scan_code = read_scan_code();
-    // printf(serial_write_char, "Received scan code %X\n", scan_code);
+    uint8_t scan_code = quick_read_controller_response();
+    printf(serial_write_char, "Received scan code %X\n", scan_code);
     pic_acknowledge(keyboard_pic_interrupt);
 }
