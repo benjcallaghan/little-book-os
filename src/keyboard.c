@@ -167,6 +167,11 @@ int initialize_keyboard()
     return 0;
 }
 
+void process_scan_code()
+{
+
+}
+
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
 {
     uint8_t scan_code = quick_read_controller_response();
@@ -197,6 +202,7 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
                 printf(serial_write_char, "%X", in_progress_scan_code[i]);
             }
             printf(serial_write_char, "\n");
+            process_scan_code();
             reset_scan_code();
         }
     }
@@ -209,6 +215,9 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
     {
         // This is a complete single-byte scan code.
         printf(serial_write_char, "Complete scan code %X\n", scan_code);
+        in_progress_scan_code[scan_code_pos++] = scan_code;
+        process_scan_code();
+        reset_scan_code();
     }
 
     pic_acknowledge(keyboard_pic_interrupt);
