@@ -68,7 +68,7 @@ enum keyboard_command : uint8_t
     reset_and_test = 0xFF,
 };
 
-enum scan_code_set_1
+enum scan_code_set_1 : uint8_t
 {
     KEY_NONE = 0x00,
     KEY_ESCAPE = 0x01,
@@ -157,24 +157,24 @@ enum scan_code_set_1
     KEY_F11 = 0x57,
     KEY_F12 = 0x58,
 
-    // Extended keys (0xE0 prefix)
-    KEY_KEYPAD_ENTER = 0xE01C,
-    KEY_RIGHT_CTRL = 0xE01D,
-    KEY_KEYPAD_SLASH = 0xE035,
-    KEY_RIGHT_ALT = 0xE038,
-    KEY_HOME = 0xE047,
-    KEY_UP_ARROW = 0xE048,
-    KEY_PAGE_UP = 0xE049,
-    KEY_LEFT_ARROW = 0xE04B,
-    KEY_RIGHT_ARROW = 0xE04D,
-    KEY_END = 0xE04F,
-    KEY_DOWN_ARROW = 0xE050,
-    KEY_PAGE_DOWN = 0xE051,
-    KEY_INSERT = 0xE052,
-    KEY_DELETE = 0xE053,
-    KEY_LEFT_GUI = 0xE05B,
-    KEY_RIGHT_GUI = 0xE05C,
-    KEY_APPS = 0xE05D,
+    // Extended keys (0xE0 prefix in scan code)
+    KEY_KEYPAD_ENTER = 0x9C,
+    KEY_RIGHT_CTRL = 0x9D,
+    KEY_KEYPAD_SLASH = 0xB5,
+    KEY_RIGHT_ALT = 0xB8,
+    KEY_HOME = 0xC7,
+    KEY_UP_ARROW = 0xC8,
+    KEY_PAGE_UP = 0xC9,
+    KEY_LEFT_ARROW = 0xCB,
+    KEY_RIGHT_ARROW = 0xCD,
+    KEY_END = 0xCF,
+    KEY_DOWN_ARROW = 0xD0,
+    KEY_PAGE_DOWN = 0xD1,
+    KEY_INSERT = 0xD2,
+    KEY_DELETE = 0xD3,
+    KEY_LEFT_GUI = 0xDB,
+    KEY_RIGHT_GUI = 0xDC,
+    KEY_APPS = 0xDD,
 };
 
 struct scan_code_result
@@ -296,7 +296,7 @@ void read_scan_code(struct scan_code_result *result)
     {
         uint8_t code = in_progress_scan_code[0];
         result->pressed = !(code & 0x80);
-        result->key = (enum scan_code_set_1)(code & 0x7F);
+        result->key = (enum scan_code_set_1)(code & 0x7F); // Turn off highest-bit
     }
 
     // Extended scan code
@@ -304,12 +304,12 @@ void read_scan_code(struct scan_code_result *result)
     {
         uint8_t code = in_progress_scan_code[1];
         result->pressed = !(code & 0x80);
-        result->key = (enum scan_code_set_1)(0xE000 | (code & 0x7F));
+        result->key = (enum scan_code_set_1)(code | 0x80); // Turn on highest-bit
     }
 
     // TODO: Add Pause/Break and Print Screen
 
-    
+
 }
 
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
