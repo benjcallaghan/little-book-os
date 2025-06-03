@@ -282,9 +282,10 @@ int initialize_keyboard()
     return 0;
 }
 
-void read_scan_code()
+void read_scan_code(struct scan_code_result *result)
 {
-    struct scan_code_result result = {KEY_NONE, false};
+    result->pressed = false;
+    result->key = KEY_NONE;
 
     if (scan_code_pos == 0)
     {
@@ -294,33 +295,27 @@ void read_scan_code()
     else if (scan_code_pos == 1)
     {
         uint8_t code = in_progress_scan_code[0];
-        result.pressed = !(code & 0x80);
-        result.key = (enum scan_code_set_1)(code & 0x7F);
+        result->pressed = !(code & 0x80);
+        result->key = (enum scan_code_set_1)(code & 0x7F);
     }
 
     // Extended scan code
     else if (scan_code_pos == 2 && in_progress_scan_code[0] == 0xE0)
     {
         uint8_t code = in_progress_scan_code[1];
-        result.pressed = !(code & 0x80);
-        result.key = (enum scan_code_set_1)(0xE000 | (code & 0x7F));
+        result->pressed = !(code & 0x80);
+        result->key = (enum scan_code_set_1)(0xE000 | (code & 0x7F));
     }
 
     // TODO: Add Pause/Break and Print Screen
 
-    if (result.pressed)
-    {
-        printf(serial_write_char, "Key pressed %X\n", result.key);
-    }
-    else
-    {
-        printf(serial_write_char, "Key released %X\n", result.key);
-    }
+    
 }
 
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
 {
     uint8_t scan_code = quick_read_controller_response();
+    struct scan_code_result result = {KEY_NONE};
 
     if (scan_code_pos > 0)
     {
@@ -342,7 +337,7 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
         else
         {
             // This is the end of the multi-byte scan code.
-            read_scan_code();
+            read_scan_code(&result);
             reset_scan_code();
         }
     }
@@ -355,8 +350,20 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
     {
         // This is a complete single-byte scan code.
         in_progress_scan_code[scan_code_pos++] = scan_code;
-        read_scan_code();
+        read_scan_code(&result);
         reset_scan_code();
+    }
+
+    if (result.key != KEY_NONE)
+    {
+        if (result.pressed)
+        {
+            printf(serial_write_char, "Key pressed %X\n", result.key);
+        }
+        else
+        {
+            printf(serial_write_char, "Key released %X\n", result.key);
+        }
     }
 
     pic_acknowledge(keyboard_pic_interrupt);
