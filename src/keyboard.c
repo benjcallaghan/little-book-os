@@ -14,6 +14,8 @@ constexpr int largest_scan_code = 6;
 uint8_t in_progress_scan_code[largest_scan_code];
 size_t scan_code_pos = 0;
 
+bool key_pressed[256];
+
 enum controller_command : uint8_t
 {
     read_first_byte = 0x20,
@@ -278,6 +280,11 @@ int initialize_keyboard()
         return 2;
     }
 
+    for (int i = 0; i < 256; i++)
+    {
+        key_pressed[i] = false;
+    }
+
     reset_scan_code();
     return 0;
 }
@@ -364,6 +371,8 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
         {
             printf(serial_write_char, "Key released %X\n", result.key);
         }
+        
+        key_pressed[result.key] = result.pressed;
     }
 
     pic_acknowledge(keyboard_pic_interrupt);
