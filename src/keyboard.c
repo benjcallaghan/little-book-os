@@ -70,7 +70,7 @@ enum keyboard_command : uint8_t
     reset_and_test = 0xFF,
 };
 
-enum scan_code_set_1 : uint8_t
+enum key_code : uint8_t
 {
     KEY_NONE = 0x00,
     KEY_ESCAPE = 0x01,
@@ -179,9 +179,9 @@ enum scan_code_set_1 : uint8_t
     KEY_APPS = 0xDD,
 };
 
-struct scan_code_result
+struct key_event
 {
-    enum scan_code_set_1 key;
+    enum key_code key;
     bool pressed;
     char character;
 };
@@ -290,7 +290,7 @@ int initialize_keyboard()
     return 0;
 }
 
-char key_code_to_ascii(enum scan_code_set_1 key) {
+char key_code_to_ascii(enum key_code key) {
     bool shift = key_pressed[KEY_LEFT_SHIFT] || key_pressed[KEY_RIGHT_SHIFT];
 
     switch (key) {
@@ -349,7 +349,7 @@ char key_code_to_ascii(enum scan_code_set_1 key) {
     }
 }
 
-void read_scan_code(struct scan_code_result *result)
+void read_scan_code(struct key_event *result)
 {
     result->pressed = false;
     result->key = KEY_NONE;
@@ -363,7 +363,7 @@ void read_scan_code(struct scan_code_result *result)
     {
         uint8_t code = in_progress_scan_code[0];
         result->pressed = !(code & 0x80);
-        result->key = (enum scan_code_set_1)(code & 0x7F); // Turn off highest-bit
+        result->key = (enum key_code)(code & 0x7F); // Turn off highest-bit
     }
 
     // Extended scan code
@@ -371,7 +371,7 @@ void read_scan_code(struct scan_code_result *result)
     {
         uint8_t code = in_progress_scan_code[1];
         result->pressed = !(code & 0x80);
-        result->key = (enum scan_code_set_1)(code | 0x80); // Turn on highest-bit
+        result->key = (enum key_code)(code | 0x80); // Turn on highest-bit
     }
 
     // TODO: Add Pause/Break and Print Screen
@@ -382,7 +382,7 @@ void read_scan_code(struct scan_code_result *result)
 __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_handler(__attribute__((unused)) struct interrupt_frame const *frame)
 {
     uint8_t scan_code = quick_read_controller_response();
-    struct scan_code_result result = {KEY_NONE};
+    struct key_event result = {KEY_NONE};
 
     if (scan_code_pos > 0)
     {
