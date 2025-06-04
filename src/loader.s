@@ -26,4 +26,5 @@ loader: ; the loader label (defined as entry point in linker script)
     ; kmain has no parameters...yet
     call kmain ; call the function, the result will be in eax
 .loop:
+    hlt
     jmp .loop ; loop forever
