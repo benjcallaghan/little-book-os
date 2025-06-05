@@ -7,15 +7,15 @@
 #include <stdint.h>
 #include <stddef.h>
 
-constexpr uint8_t keyboard_pic_interrupt = 1;
-constexpr uint16_t controller_data_port = 0x60;
-constexpr uint16_t controller_command_port = 0x64;
-constexpr int largest_scan_code = 6;
+static constexpr uint8_t keyboard_pic_interrupt = 1;
+static constexpr uint16_t controller_data_port = 0x60;
+static constexpr uint16_t controller_command_port = 0x64;
+static constexpr int largest_scan_code = 6;
 
-uint8_t in_progress_scan_code[largest_scan_code];
-size_t scan_code_pos = 0;
+static uint8_t in_progress_scan_code[largest_scan_code];
+static size_t scan_code_pos = 0;
 
-bool key_pressed[256];
+static bool key_pressed[256];
 
 enum controller_command : uint8_t
 {
@@ -187,7 +187,7 @@ struct key_event
     char character;
 };
 
-void reset_scan_code()
+static void reset_scan_code()
 {
     for (int i = 0; i < largest_scan_code; i++)
     {
@@ -196,31 +196,31 @@ void reset_scan_code()
     scan_code_pos = 0;
 }
 
-bool input_buffer_full()
+static bool input_buffer_full()
 {
     return inb(controller_command_port) & 0x02;
 }
 
-void write_controller_data(uint8_t data)
+static void write_controller_data(uint8_t data)
 {
     while (input_buffer_full())
         ;
     outb(controller_data_port, data);
 }
 
-bool output_buffer_empty()
+static bool output_buffer_empty()
 {
     return inb(controller_command_port) & 0x01;
 }
 
-uint8_t read_controller_response()
+static uint8_t read_controller_response()
 {
     while (!output_buffer_empty())
         ;
     return inb(controller_data_port);
 }
 
-uint8_t quick_read_controller_response()
+static uint8_t quick_read_controller_response()
 {
     return inb(controller_data_port);
 }
@@ -291,7 +291,7 @@ int initialize_keyboard()
     return 0;
 }
 
-char key_code_to_ascii(enum key_code key)
+static char key_code_to_ascii(enum key_code key)
 {
     bool shift = key_pressed[KEY_LEFT_SHIFT] || key_pressed[KEY_RIGHT_SHIFT];
 
@@ -404,7 +404,7 @@ char key_code_to_ascii(enum key_code key)
     }
 }
 
-void read_scan_code(struct key_event *result)
+static void read_scan_code(struct key_event *result)
 {
     result->pressed = false;
     result->key = KEY_NONE;

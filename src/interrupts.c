@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include "keyboard.h"
 
-constexpr int MAX_INTERRUPTS = 34;
-constexpr int CODE_SEGMENT = 0x08;
+static constexpr int MAX_INTERRUPTS = 34;
+static constexpr int CODE_SEGMENT = 0x08;
 
 struct interrupt_descriptor
 {
@@ -26,7 +26,7 @@ struct interrupt_descriptor
 struct interrupt_descriptor_unsafe interrupts[MAX_INTERRUPTS];
 struct interrupt_descriptor_table table = {.size = sizeof interrupts, .interrupts = interrupts};
 
-void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, struct interrupt_descriptor_unsafe *target)
+static void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, struct interrupt_descriptor_unsafe *target)
 {
     // Whether the interrupt has an error code is irrelevant at this stage. In both cases, the pointer width is the same.
     target->offset_low = (uintptr_t)descriptor->handler.no_error_code & 0xFFFF;
@@ -37,21 +37,21 @@ void load_interrupt_descriptor(struct interrupt_descriptor const *descriptor, st
     target->offset_high = ((uintptr_t)descriptor->handler.no_error_code >> 16) & 0xFFFF;
 }
 
-__attribute__((interrupt, target("general-regs-only"))) void div_0_handler(struct interrupt_frame const *frame)
+__attribute__((interrupt, target("general-regs-only"))) static void div_0_handler(struct interrupt_frame const *frame)
 {
     fb_clear();
     printf(fb_write_char, "#DE EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
     printf(serial_write_char, "ERROR: Divide Error. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
 }
 
-__attribute__((interrupt, target("general-regs-only"))) void debug_handler(struct interrupt_frame const *frame)
+__attribute__((interrupt, target("general-regs-only"))) static void debug_handler(struct interrupt_frame const *frame)
 {
     fb_clear();
     printf(fb_write_char, "#DB EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
     printf(serial_write_char, "ERROR: Debug Exception. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
 }
 
-__attribute__((interrupt, target("general-regs-only"))) void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
+__attribute__((interrupt, target("general-regs-only"))) static void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
 {
     fb_clear();
     printf(fb_write_char, "#GP CODE=%X,EFLAGS=%X,CS=%X,EIP=%X", error_code, frame->eflags, frame->cs, frame->eip);

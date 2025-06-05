@@ -4,7 +4,7 @@
  * All I/O ports are calculated relative to the data port. This is because all serial ports
  * (COM1, COM2, COM3, COM4) have their ports in the same order, but they start at different values.
  */
-constexpr uint16_t SERIAL_COM1_BASE = 0x03F8;
+static constexpr uint16_t SERIAL_COM1_BASE = 0x03F8;
 
 #define SERIAL_DATA_PORT(base) (base)
 #define SERIAL_DIVISOR_PORT_LOW(base) (base)
@@ -15,7 +15,7 @@ constexpr uint16_t SERIAL_COM1_BASE = 0x03F8;
 #define SERIAL_LINE_STATUS_PORT(base) (base + 5)
 
 // Tells the serial port to expect first the highest 8 bits on the data port, then the lowest 8 bits will follow.
-constexpr uint8_t SERIAL_LINE_ENABLE_DLAB = 0x80;
+static constexpr uint8_t SERIAL_LINE_ENABLE_DLAB = 0x80;
 
 /**
  * Sets the speed of the data being sent. The default speed of a serial port is 115200 bits/s.
@@ -23,7 +23,7 @@ constexpr uint8_t SERIAL_LINE_ENABLE_DLAB = 0x80;
  * @param com The COM port to configure
  * @param divisor The divisor
  */
-void serial_configure_baud_rate(uint16_t com, int divisor)
+static void serial_configure_baud_rate(uint16_t com, int divisor)
 {
     outb(SERIAL_LINE_COMMAND_PORT(com), SERIAL_LINE_ENABLE_DLAB);
     outb(SERIAL_DIVISOR_PORT_HIGH(com), divisor >> 8);
@@ -35,7 +35,7 @@ void serial_configure_baud_rate(uint16_t com, int divisor)
  * no parity bits, one stop bit and break control disabled.
  * @param com The serial port to configure
  */
-void serial_configure_line(uint16_t com)
+static void serial_configure_line(uint16_t com)
 {
     /*
      * Bit:     | 7 | 6 | 5 4 3 | 2 | 1 0 |
@@ -45,7 +45,7 @@ void serial_configure_line(uint16_t com)
     outb(SERIAL_LINE_COMMAND_PORT(com), 0x03);
 }
 
-void serial_configure_buffers(uint16_t com)
+static void serial_configure_buffers(uint16_t com)
 {
     /*
      * Bit:     | 7 6 | 5  | 4 | 3   | 2   | 1   | 0 |
@@ -55,7 +55,7 @@ void serial_configure_buffers(uint16_t com)
     outb(SERIAL_FIFO_COMMAND_PORT(com), 0xC7);
 }
 
-void serial_configure_modem(uint16_t com)
+static void serial_configure_modem(uint16_t com)
 {
     /*
      * Bit:     | 7 | 6 | 5  | 4  | 3   | 2   | 1   | 0   |
@@ -65,7 +65,7 @@ void serial_configure_modem(uint16_t com)
     outb(SERIAL_MODEM_COMMAND_PORT(com), 0x03);
 }
 
-bool serial_is_transmit_fifo_empty(uint16_t com)
+static bool serial_is_transmit_fifo_empty(uint16_t com)
 {
     // 0x20 = Bit 5
     return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20;

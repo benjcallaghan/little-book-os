@@ -28,27 +28,27 @@ struct fb_cell
     enum fb_color foreground_color : 4;
     enum fb_color background_color : 4;
 } __attribute__((packed));
-const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .background_color = 0};
+static const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .background_color = 0};
 
-struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
+static struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
-constexpr uint16_t FB_COMMAND_PORT = 0x03D4;
-constexpr uint16_t FB_DATA_PORT = 0x03D5;
+static constexpr uint16_t FB_COMMAND_PORT = 0x03D4;
+static constexpr uint16_t FB_DATA_PORT = 0x03D5;
 
-constexpr uint8_t FB_HIGH_BYTE_COMMAND = 14;
-constexpr uint8_t FB_LOW_BYTE_COMMAND = 15;
+static constexpr uint8_t FB_HIGH_BYTE_COMMAND = 14;
+static constexpr uint8_t FB_LOW_BYTE_COMMAND = 15;
 
-constexpr int FB_COLS = 80;
-constexpr int FB_ROWS = 25;
-constexpr int FB_CELLS = (FB_COLS * FB_ROWS);
+static constexpr int FB_COLS = 80;
+static constexpr int FB_ROWS = 25;
+static constexpr int FB_CELLS = (FB_COLS * FB_ROWS);
 
-uint16_t cursor_pos = 0;
+static uint16_t cursor_pos = 0;
 
 /** fb_move_cursor:
  * Moves the cursor of the framebuffer to the given position
  * @param pos The new position of the cursor
  */
-void fb_move_cursor(uint16_t pos)
+static void fb_move_cursor(uint16_t pos)
 {
     if (pos > FB_CELLS)
     {

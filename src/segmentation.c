@@ -1,8 +1,8 @@
 #include "gdt.h"
 #include <stddef.h>
 
-constexpr int NUM_SEGMENTS = 3;
-constexpr size_t MAX_SEGMENT_LIMIT = 0xFFFFF; // largest 20-bit value
+static constexpr int NUM_SEGMENTS = 3;
+static constexpr size_t MAX_SEGMENT_LIMIT = 0xFFFFF; // largest 20-bit value
 
 struct segment_descriptor
 {
@@ -15,7 +15,7 @@ struct segment_descriptor
 struct segment_descriptor_unsafe global_segments[NUM_SEGMENTS];
 struct segment_descriptor_table global_table = {.size = sizeof global_segments, .segments = global_segments};
 
-void load_segment_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
+static void load_segment_descriptor(struct segment_descriptor const *descriptor, struct segment_descriptor_unsafe *target)
 {
     target->limit_low = (descriptor->limit) & 0xFFFF;
     target->limit_high = (descriptor->limit >> 16) & 0xFF;
