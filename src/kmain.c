@@ -7,7 +7,7 @@
 #include "multiboot.h"
 #include "printf.h"
 
-typedef void (*call_module_t)(void);
+typedef uint32_t (*call_module_t)(void);
 
 int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
 {
@@ -43,7 +43,8 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
 
         printf(serial_write_char, "Address of start of module %X\n", modules->mod_start);
         call_module_t program = (call_module_t)modules->mod_start;
-        program();
+        uint32_t result = program();
+        printf(fb_write_char, "RESULT %X", result);
     }
 
     return 0xCAFEBABE;
