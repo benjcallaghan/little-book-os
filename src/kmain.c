@@ -44,6 +44,7 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
         printf(serial_write_char, "Address of start of module %X\n", modules->mod_start);
         call_module_t program = (call_module_t)modules->mod_start;
         uint32_t result = program();
+        printf(serial_write_char, "RESULT %X", result);
         printf(fb_write_char, "RESULT %X", result);
     }
 
