@@ -29,8 +29,8 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
     initialze_interrupts();
 
     fb_clear();
-    fb_write("Hello, world!");
-    printf(fb_write_char, "Bootloader flags %X", boot_info->flags);
+    fb_write("Hello, world!\n");
+    printf(fb_write_char, "Bootloader flags %X\n", boot_info->flags);
 
     serial_write("This is a longer log written to the serial log file.\n");
     serial_write("ASCII control characters like LF should be usable here.\n");
@@ -45,7 +45,7 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
         call_module_t program = (call_module_t)modules->mod_start;
         uint32_t result = program();
         printf(serial_write_char, "RESULT %X", result);
-        printf(fb_write_char, "RESULT %X", result);
+        printf(fb_write_char, "RESULT %X\n", result);
     }
 
     return 0xCAFEBABE;

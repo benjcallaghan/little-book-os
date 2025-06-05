@@ -76,8 +76,16 @@ void fb_move_cursor(uint16_t pos)
 
 void fb_write_char(char c)
 {
-    fb[cursor_pos] = (struct fb_cell){.character = c, .foreground_color = white, .background_color = black};
-    fb_move_cursor(cursor_pos + 1);
+    if (c == '\n')
+    {
+        int distance = FB_COLS - (cursor_pos % FB_COLS);
+        fb_move_cursor(cursor_pos + distance);
+    }
+    else
+    {
+        fb[cursor_pos] = (struct fb_cell){.character = c, .foreground_color = white, .background_color = black};
+        fb_move_cursor(cursor_pos + 1);
+    }
 }
 
 void fb_write(char const *str)
