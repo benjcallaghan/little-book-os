@@ -6,3 +6,6 @@
 # Log files
 bochslog.txt
 *.out
+
+# Compiled boot modules
+iso/modules
