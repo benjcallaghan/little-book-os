@@ -1,4 +1,4 @@
-#include "gdt.h"
+#include "instructions/gdt.h"
 #include <stddef.h>
 
 static constexpr int NUM_SEGMENTS = 3;
