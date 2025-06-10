@@ -1,8 +1,9 @@
-SOURCES := $(wildcard src/*.c src/*.s)
-OBJECTS := $(patsubst src/%.c,obj/%.o,$(SOURCES))
-OBJECTS := $(patsubst src/%.s,obj/%.o,$(OBJECTS))
+rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+
+SOURCES := $(call rwildcard,src,*.c *.s)
+OBJECTS := $(addsuffix .o,$(basename $(SOURCES)))
 CC := gcc
-CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -std=c2x
+CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -std=c2x
 LDFLAGS := -T link.ld -melf_i386
 AS := nasm
 ASFLAGS := -f elf
@@ -20,16 +21,7 @@ os.iso: kernel.elf
 .PHONY: run
 run: os.iso
 	bochs -f bochsrc.txt -q
-
-obj/%.o: src/%.c | obj
-	$(CC) $(CFLAGS) $< -o $@
-
-obj/%.o: src/%.s | obj
-	$(AS) $(ASFLAGS) $< -o $@
-
-obj:
-	mkdir -p $@
-
+	
 .PHONY: clean
 clean:
-	rm -rf obj kernel.elf os.iso
+	rm -rf kernel.elf os.iso $(OBJECTS)

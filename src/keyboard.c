@@ -3,7 +3,7 @@
 #include "pic.h"
 #include "io.h"
 #include "printf.h"
-#include "framebuffer.h"
+#include "drivers/framebuffer.h"
 #include <stdint.h>
 #include <stddef.h>
 
