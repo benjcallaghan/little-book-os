@@ -225,7 +225,7 @@ static uint8_t quick_read_controller_response()
     return inb(controller_data_port);
 }
 
-int initialize_keyboard()
+int keyboard_initialze()
 {
     // TODO: Determine if a PS/2 controller exists.
 

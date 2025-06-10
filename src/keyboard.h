@@ -2,4 +2,4 @@
 #include "interrupts.h"
 
 void keyboard_interrupt_handler(struct interrupt_frame const *frame);
-int initialize_keyboard();
+int keyboard_initialze();
