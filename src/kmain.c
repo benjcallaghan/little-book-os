@@ -1,4 +1,4 @@
-#include "fb.h"
+#include "framebuffer.h"
 #include "serial.h"
 #include "segmentation.h"
 #include "interrupts.h"

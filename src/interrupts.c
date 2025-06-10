@@ -1,7 +1,7 @@
 #include "idt.h"
 #include "serial.h"
 #include "printf.h"
-#include "fb.h"
+#include "framebuffer.h"
 #include "io.h"
 #include "pic.h"
 #include <stddef.h>
