@@ -1,4 +1,4 @@
-#include "idt.h"
+#include "instructions/idt.h"
 #include "drivers/serial.h"
 #include "printf.h"
 #include "drivers/framebuffer.h"
