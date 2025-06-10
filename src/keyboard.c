@@ -3,7 +3,7 @@
 #include "pic.h"
 #include "io.h"
 #include "printf.h"
-#include "fb.h"
+#include "framebuffer.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -483,7 +483,7 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
             printf(serial_write_char, "Key pressed %X\n", result.key);
             if (result.character != -1)
             {
-                fb_write_char(result.character);
+                framebuffer_write_char(result.character);
             }
         }
         else
