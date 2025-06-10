@@ -7,6 +7,13 @@
 #include "multiboot.h"
 #include "printf.h"
 
+constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN;
+const struct multiboot_header header __attribute__((section(".multiboot"))) = {
+    .magic = MULTIBOOT_HEADER_MAGIC,
+    .flags = MULTIBOOT_FLAGS,
+    .checksum = -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_FLAGS),
+};
+
 typedef uint32_t (*call_module_t)(void);
 
 int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)

@@ -3,9 +3,13 @@ ENTRY(loader) /* the name of the entry label */
 SECTIONS {
   . = 0x00100000; /* the code should be loaded at 1 MB */
 
+  .multiboot ALIGN (0x1000) :
+  {
+    *(.multiboot)
+  }
+
   .text ALIGN (0x1000) : /* align at 4 KB */
   {
-    src/loader.o(.text) /* Place loader.o first so it's magic numbers are reachable by GRUB */
     *(.text) /* all text sections from all files */
   }
 
@@ -21,7 +25,6 @@ SECTIONS {
 
   .bss ALIGN (0x1000): /* align at 4 KB */
   {
-    src/loader.o(.bss)
     *(COMMON) /* all COMMON sections from all files */
     *(.bss) /* all bss sections from all files */
   }
