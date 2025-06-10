@@ -16,7 +16,7 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
 
 typedef uint32_t (*call_module_t)(void);
 
-int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
+int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 {
     if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC)
     {
@@ -46,10 +46,10 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
     {
         printf(serial_write_char, "Number of boot modules %X\n", boot_info->mods_count);
         printf(serial_write_char, "Address of module structures %X\n", boot_info->mods_addr);
-        multiboot_module_t *modules = (multiboot_module_t *)boot_info->mods_addr;
+        struct multiboot_mod_list *modules = (struct multiboot_mod_list *)boot_info->mods_addr;
 
-        printf(serial_write_char, "Address of start of module %X\n", modules->mod_start);
-        call_module_t program = (call_module_t)modules->mod_start;
+        printf(serial_write_char, "Address of start of module %X\n", modules[0].mod_start);
+        call_module_t program = (call_module_t)modules[0].mod_start;
         uint32_t result = program();
         printf(serial_write_char, "RESULT %X", result);
         printf(framebuffer_write_char, "RESULT %X\n", result);
