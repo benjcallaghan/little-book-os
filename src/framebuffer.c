@@ -74,7 +74,7 @@ static void fb_move_cursor(uint16_t pos)
     cursor_pos = pos;
 }
 
-void fb_write_char(char c)
+void framebuffer_write_char(char c)
 {
     if (c == '\n')
     {
@@ -88,16 +88,16 @@ void fb_write_char(char c)
     }
 }
 
-void fb_write(char const *str)
+void framebuffer_write(char const *str)
 {
     char c;
     while ((c = *str++))
     {
-        fb_write_char(c);
+        framebuffer_write_char(c);
     }
 }
 
-void fb_clear()
+void framebuffer_clear()
 {
     for (size_t i = 0; i < FB_CELLS; i++)
     {
