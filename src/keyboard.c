@@ -1,6 +1,6 @@
 #include "interrupts.h"
 #include "drivers/serial.h"
-#include "pic.h"
+#include "drivers/pic.h"
 #include "io.h"
 #include "printf.h"
 #include "drivers/framebuffer.h"

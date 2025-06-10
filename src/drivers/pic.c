@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "io.h"
+#include "../io.h"
 
 static constexpr uint16_t PIC1 = 0x20;
 static constexpr uint16_t PIC2 = 0xA0;

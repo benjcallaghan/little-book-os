@@ -3,7 +3,7 @@
 #include "printf.h"
 #include "drivers/framebuffer.h"
 #include "io.h"
-#include "pic.h"
+#include "drivers/pic.h"
 #include <stddef.h>
 #include "keyboard.h"
 

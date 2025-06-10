@@ -2,7 +2,7 @@
 #include "drivers/serial.h"
 #include "segmentation.h"
 #include "interrupts.h"
-#include "pic.h"
+#include "drivers/pic.h"
 #include "keyboard.h"
 #include "multiboot.h"
 #include "printf.h"
