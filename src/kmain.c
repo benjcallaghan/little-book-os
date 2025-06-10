@@ -26,7 +26,7 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
     }
 
     pic_initialze();
-    initialze_interrupts();
+    interrupts_initialize();
 
     framebuffer_clear();
     framebuffer_write("Hello, world!\n");

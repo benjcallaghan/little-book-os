@@ -58,7 +58,7 @@ __attribute__((interrupt, target("general-regs-only"))) static void general_prot
     printf(serial_write_char, "ERROR: General Protection Fault. Error Code=%X,EFLAGS=%X,CS=%X,EIP=%X\n", error_code, frame->eflags, frame->cs, frame->eip);
 }
 
-void initialze_interrupts()
+void interrupts_initialize()
 {
     struct interrupt_descriptor interrupt_x00 = {
         .handler = {div_0_handler},

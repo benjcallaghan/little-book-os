@@ -11,4 +11,4 @@ struct interrupt_frame
 /**
  * Initializes interrupt handlers
  */
-void initialze_interrupts();
+void interrupts_initialize();
