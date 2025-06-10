@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "serial.h"
+#include "drivers/serial.h"
 #include "printf.h"
 #include "drivers/framebuffer.h"
 #include "io.h"

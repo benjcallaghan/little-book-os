@@ -1,5 +1,5 @@
 #include "drivers/framebuffer.h"
-#include "serial.h"
+#include "drivers/serial.h"
 #include "segmentation.h"
 #include "interrupts.h"
 #include "pic.h"

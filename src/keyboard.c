@@ -1,5 +1,5 @@
 #include "interrupts.h"
-#include "serial.h"
+#include "drivers/serial.h"
 #include "pic.h"
 #include "io.h"
 #include "printf.h"
