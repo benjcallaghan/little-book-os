@@ -1,9 +1,9 @@
-#include "interrupts.h"
-#include "drivers/serial.h"
-#include "drivers/pic.h"
-#include "io.h"
-#include "printf.h"
-#include "drivers/framebuffer.h"
+#include "../interrupts.h"
+#include "./serial.h"
+#include "./pic.h"
+#include "../io.h"
+#include "../printf.h"
+#include "./framebuffer.h"
 #include <stdint.h>
 #include <stddef.h>
 

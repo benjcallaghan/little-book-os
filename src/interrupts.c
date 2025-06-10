@@ -5,7 +5,7 @@
 #include "io.h"
 #include "drivers/pic.h"
 #include <stddef.h>
-#include "keyboard.h"
+#include "drivers/keyboard.h"
 
 static constexpr int MAX_INTERRUPTS = 34;
 static constexpr int CODE_SEGMENT = 0x08;

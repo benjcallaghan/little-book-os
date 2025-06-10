@@ -3,7 +3,7 @@
 #include "segmentation.h"
 #include "interrupts.h"
 #include "drivers/pic.h"
-#include "keyboard.h"
+#include "drivers/keyboard.h"
 #include "multiboot.h"
 #include "printf.h"
 
