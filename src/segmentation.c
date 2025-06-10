@@ -27,7 +27,7 @@ static void load_segment_descriptor(struct segment_descriptor const *descriptor,
     target->flags = descriptor->flags;
 }
 
-void initialze_segmentation()
+void segmentation_initialize()
 {
     struct segment_descriptor null = {
         .base = 0,

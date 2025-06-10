@@ -17,7 +17,7 @@ int kmain(uint32_t bootloader_magic, multiboot_info_t const *boot_info)
     }
 
     serial_init_com1();
-    initialze_segmentation();
+    segmentation_initialize();
 
     int error = keyboard_initialze();
     if (error)
