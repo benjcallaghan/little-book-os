@@ -9,3 +9,6 @@ bochslog.txt
 
 # Compiled boot modules
 iso/modules
+
+# VIM temp files
+*.swp

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "../instructions/io.h"
+#include "../logger.h"
 
 static constexpr uint16_t PIC1 = 0x20;
 static constexpr uint16_t PIC2 = 0xA0;
@@ -89,4 +90,6 @@ void pic_initialze()
     enum pic2_interrupts pic2_enabled = pic2_none;
     outb(PIC1_DATA, ~pic1_enabled);
     outb(PIC2_DATA, ~pic2_enabled);
+
+    logf(log_info, "The Programmable Interrupt Controller (PIC) is initialized.\n");
 }

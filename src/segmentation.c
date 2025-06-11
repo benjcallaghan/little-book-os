@@ -1,5 +1,6 @@
 #include "instructions/gdt.h"
 #include <stddef.h>
+#include "logger.h"
 
 static constexpr int NUM_SEGMENTS = 3;
 static constexpr size_t MAX_SEGMENT_LIMIT = 0xFFFFF; // largest 20-bit value
@@ -54,4 +55,5 @@ void segmentation_initialize()
     load_segment_descriptor(&data, global_table.segments + 2);
 
     load_global_descriptor_table(&global_table);
+    logf(log_info, "Memory segmentation is initialized.\n");
 }

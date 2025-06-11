@@ -1,7 +1,5 @@
 #include "instructions/idt.h"
-#include "drivers/serial.h"
-#include "printf.h"
-#include "drivers/framebuffer.h"
+#include "logger.h"
 #include "instructions/io.h"
 #include "drivers/pic.h"
 #include <stddef.h>
@@ -39,23 +37,17 @@ static void load_interrupt_descriptor(struct interrupt_descriptor const *descrip
 
 __attribute__((interrupt, target("general-regs-only"))) static void div_0_handler(struct interrupt_frame const *frame)
 {
-    framebuffer_clear();
-    printf(framebuffer_write_char, "#DE EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
-    printf(serial_write_char, "ERROR: Divide Error. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
+    logf(log_error, "#DE EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
 }
 
 __attribute__((interrupt, target("general-regs-only"))) static void debug_handler(struct interrupt_frame const *frame)
 {
-    framebuffer_clear();
-    printf(framebuffer_write_char, "#DB EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
-    printf(serial_write_char, "ERROR: Debug Exception. EFLAGS=%X,CS=%X,EIP=%X\n", frame->eflags, frame->cs, frame->eip);
+    logf(log_error, "#DB EFLAGS=%X,CS=%X,EIP=%X", frame->eflags, frame->cs, frame->eip);
 }
 
 __attribute__((interrupt, target("general-regs-only"))) static void general_protection_fault_handler(struct interrupt_frame const *frame, uint32_t error_code)
 {
-    framebuffer_clear();
-    printf(framebuffer_write_char, "#GP CODE=%X,EFLAGS=%X,CS=%X,EIP=%X", error_code, frame->eflags, frame->cs, frame->eip);
-    printf(serial_write_char, "ERROR: General Protection Fault. Error Code=%X,EFLAGS=%X,CS=%X,EIP=%X\n", error_code, frame->eflags, frame->cs, frame->eip);
+    logf(log_error, "#GP CODE=%X,EFLAGS=%X,CS=%X,EIP=%X", error_code, frame->eflags, frame->cs, frame->eip);
 }
 
 void interrupts_initialize()
@@ -92,4 +84,5 @@ void interrupts_initialize()
     load_interrupt_descriptor(&interrupt_x21, interrupts + 0x21);
 
     load_interrupt_descriptor_table(&table);
+    logf(log_info, "Interrupts are initialized.\n");
 }

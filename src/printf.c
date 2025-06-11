@@ -1,12 +1,11 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-int printf(void (*write)(char), char const *format, ...)
+int vprintf(void (*write)(char), char const *format, va_list args)
 {
-    va_list args;
     int bytes_written = 0;
 
-    for (va_start(args, format); *format != 0; ++format)
+    for (; *format != 0; ++format)
     {
         if (*format == '%')
         {
@@ -32,6 +31,16 @@ int printf(void (*write)(char), char const *format, ...)
         }
     }
 
-    va_end(args);
     return bytes_written;
+}
+
+int printf(void (*write)(char), char const *format, ...)
+{
+    va_list args;
+
+    va_start(args, format);
+    int result = vprintf(write, format, args);
+    va_end(args);
+
+    return result;
 }

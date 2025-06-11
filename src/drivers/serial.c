@@ -1,4 +1,5 @@
 #include "../instructions/io.h"
+#include "../logger.h"
 
 /*
  * All I/O ports are calculated relative to the data port. This is because all serial ports
@@ -77,6 +78,7 @@ void serial_init_com1()
     serial_configure_line(SERIAL_COM1_BASE);
     serial_configure_buffers(SERIAL_COM1_BASE);
     serial_configure_modem(SERIAL_COM1_BASE);
+    logf(log_info, "Serial port COM1 is initialized.\n");
 }
 
 void serial_write_char(char c)

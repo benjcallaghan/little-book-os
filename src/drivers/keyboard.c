@@ -1,9 +1,7 @@
 #include "../interrupts.h"
-#include "./serial.h"
 #include "./pic.h"
 #include "../instructions/io.h"
-#include "../printf.h"
-#include "./framebuffer.h"
+#include "../logger.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -230,16 +228,16 @@ int keyboard_initialze()
     // TODO: Determine if a PS/2 controller exists.
 
     // Disable PS/2 devices to avoid errant data during init.
-    serial_write("Disabling all PS/2 ports.\n");
+    logf(log_debug, "Disabling all PS/2 ports.\n");
     outb(controller_command_port, disable_first_port);
     outb(controller_command_port, disable_second_port);
 
     // Flush the output buffer to ensure a clean state.
-    serial_write("Flushing the PS/2 output buffer.\n");
+    logf(log_debug, "Flushing the PS/2 output buffer.\n");
     inb(controller_data_port);
 
     // Disable interrupts and translation during init.
-    serial_write("Configuring the PS/2 controller.\n");
+    logf(log_debug, "Configuring the PS/2 controller.\n");
     outb(controller_command_port, read_first_byte);
     uint8_t configuration = read_controller_response();
     configuration &= ~first_port_interrupt;
@@ -249,36 +247,36 @@ int keyboard_initialze()
     write_controller_data(configuration);
 
     // Test the first port (we don't care about the second right now).
-    serial_write("Testing the first PS/2 port.\n");
+    logf(log_debug, "Testing the first PS/2 port.\n");
     outb(controller_command_port, test_first_port);
     uint8_t first_port_results = read_controller_response();
     if (first_port_results)
     {
-        printf(serial_write_char, "The first PS/2 port failed its initialization test. Result %X\n", first_port_results);
+        logf(log_error, "The first PS/2 port failed its initialization test. Result %X\n", first_port_results);
         return 1;
     }
 
     // Enable first port, with interrupts
-    serial_write("Enabling the first PS/2 port, with interrupts.\n");
+    logf(log_debug, "Enabling the first PS/2 port, with interrupts.\n");
     outb(controller_command_port, enable_first_port);
     configuration |= first_port_interrupt;
     outb(controller_command_port, write_first_byte);
     write_controller_data(configuration);
 
     // Reset the first port's device
-    serial_write("Resetting the keyboard plugged into PS/2 port 1.\n");
+    logf(log_debug, "Resetting the keyboard plugged into PS/2 port 1.\n");
     write_controller_data(reset_and_test);
     uint8_t keyboard_result = read_controller_response();
     if (keyboard_result != 0xFA)
     {
-        printf(serial_write_char, "The keyboard did not positively acknowledge the reset command. Result %X\n", keyboard_result);
+        logf(log_error, "The keyboard did not positively acknowledge the reset command. Result %X\n", keyboard_result);
         return 2;
     }
 
     keyboard_result = read_controller_response();
     if (keyboard_result != 0xAA)
     {
-        printf(serial_write_char, "The keyboard's self-test failed. Result %X\n", keyboard_result);
+        logf(log_error, "The keyboard's self-test failed. Result %X\n", keyboard_result);
         return 2;
     }
 
@@ -288,6 +286,7 @@ int keyboard_initialze()
     }
 
     reset_scan_code();
+    logf(log_info, "The keyboard is initialized.\n");
     return 0;
 }
 
@@ -480,15 +479,15 @@ __attribute__((interrupt, target("general-regs-only"))) void keyboard_interrupt_
     {
         if (result.pressed)
         {
-            printf(serial_write_char, "Key pressed %X\n", result.key);
+            logf(log_debug, "Key pressed %X\n", result.key);
             if (result.character != -1)
             {
-                framebuffer_write_char(result.character);
+                // framebuffer_write_char(result.character);
             }
         }
         else
         {
-            printf(serial_write_char, "Key released %X\n", result.key);
+            logf(log_debug, "Key released %X\n", result.key);
         }
 
         key_pressed[result.key] = result.pressed;
