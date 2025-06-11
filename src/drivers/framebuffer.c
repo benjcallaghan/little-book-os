@@ -1,4 +1,6 @@
 #include "../instructions/io.h"
+#include "../multiboot.h"
+#include "../printf.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -30,7 +32,7 @@ struct fb_cell
 } __attribute__((packed));
 static const struct fb_cell null_cell = {.character = 0, .foreground_color = 0, .background_color = 0};
 
-static struct fb_cell *const fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
+static struct fb_cell *fb = (struct fb_cell *)0x000B8000; // The memory-mapped I/O address of the framebuffer.
 
 static constexpr uint16_t FB_COMMAND_PORT = 0x03D4;
 static constexpr uint16_t FB_DATA_PORT = 0x03D5;
@@ -38,11 +40,13 @@ static constexpr uint16_t FB_DATA_PORT = 0x03D5;
 static constexpr uint8_t FB_HIGH_BYTE_COMMAND = 14;
 static constexpr uint8_t FB_LOW_BYTE_COMMAND = 15;
 
-static constexpr int FB_COLS = 80;
-static constexpr int FB_ROWS = 25;
-static constexpr int FB_CELLS = (FB_COLS * FB_ROWS);
+static size_t FB_COLS = 80;
+static size_t FB_ROWS = 25;
+static size_t FB_CELLS = 2000;
 
 static uint16_t cursor_pos = 0;
+
+
 
 /** fb_move_cursor:
  * Moves the cursor of the framebuffer to the given position
@@ -104,4 +108,17 @@ void framebuffer_clear()
         fb[i] = null_cell;
     }
     fb_move_cursor(0);
+}
+
+void framebuffer_initialize(struct multiboot_info const *boot_info)
+{
+	fb = (struct fb_cell *)(uint32_t)boot_info->framebuffer_addr;
+	FB_COLS = boot_info->framebuffer_width;
+	FB_ROWS = boot_info->framebuffer_height;
+	FB_CELLS = FB_COLS * FB_ROWS;
+
+	framebuffer_clear();
+
+	// We don't know that Serial has been enabled for logging yet.
+	printf(framebuffer_write_char, "Framebuffer is initialized at %X.\n", boot_info->framebuffer_addr);
 }

@@ -13,6 +13,10 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
     .magic = MULTIBOOT_HEADER_MAGIC,
     .flags = MULTIBOOT_FLAGS,
     .checksum = -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_FLAGS),
+    .mode_type = 1, // EGA-standard text mode
+	.width = 0, // No preference
+	.height = 0, // No preference
+	.depth = 0, // Not applicable
 };
 
 typedef uint32_t (*call_module_t)(void);
@@ -24,9 +28,16 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
         return 1;
     }
 
-    framebuffer_clear();
-    serial_init_com1();
+    if (boot_info->flags & MULTIBOOT_INFO_FRAMEBUFFER_INFO)
+    {
+	    framebuffer_initialize(boot_info);
+    }
+    else
+    {
+	    framebuffer_clear(); // Hope that the default configuration works.
+    }
     
+    serial_init_com1();    
     segmentation_initialize();
 
     int error = keyboard_initialze();
@@ -38,7 +49,6 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     pic_initialze();
     interrupts_initialize();
 
-    logf(log_info, "Hello, world!");    
     logf(log_debug, "Bootloader flags %X", boot_info->flags);
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
