@@ -91,5 +91,5 @@ void pic_initialze()
     outb(PIC1_DATA, ~pic1_enabled);
     outb(PIC2_DATA, ~pic2_enabled);
 
-    logf(log_info, "The Programmable Interrupt Controller (PIC) is initialized.\n");
+    logf(log_info, "The Programmable Interrupt Controller (PIC) is initialized.");
 }

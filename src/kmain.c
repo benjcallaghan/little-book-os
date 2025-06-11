@@ -38,19 +38,19 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     pic_initialze();
     interrupts_initialize();
 
-    logf(log_info, "Hello, world!\n");    
-    logf(log_debug, "Bootloader flags %X\n", boot_info->flags);
+    logf(log_info, "Hello, world!");    
+    logf(log_debug, "Bootloader flags %X", boot_info->flags);
 
     if ((boot_info->flags & MULTIBOOT_INFO_MODS) && boot_info->mods_count > 0)
     {
-        logf(log_debug, "Number of boot modules %X\n", boot_info->mods_count);
-        logf(log_debug, "Address of module structures %X\n", boot_info->mods_addr);
+        logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
+        logf(log_debug, "Address of module structures %X", boot_info->mods_addr);
         struct multiboot_mod_list *modules = (struct multiboot_mod_list *)boot_info->mods_addr;
 
-        logf(log_debug, "Address of start of module %X\n", modules[0].mod_start);
+        logf(log_debug, "Address of start of module %X", modules[0].mod_start);
         call_module_t program = (call_module_t)modules[0].mod_start;
         uint32_t result = program();
-        logf(log_info, "Boot Module Result: %X\n", result);
+        logf(log_info, "Boot Module Result: %X", result);
     }
 
     return 0xCAFEBABE;

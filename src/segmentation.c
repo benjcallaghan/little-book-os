@@ -55,5 +55,5 @@ void segmentation_initialize()
     load_segment_descriptor(&data, global_table.segments + 2);
 
     load_global_descriptor_table(&global_table);
-    logf(log_info, "Memory segmentation is initialized.\n");
+    logf(log_info, "Memory segmentation is initialized.");
 }

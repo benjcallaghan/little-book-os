@@ -84,5 +84,5 @@ void interrupts_initialize()
     load_interrupt_descriptor(&interrupt_x21, interrupts + 0x21);
 
     load_interrupt_descriptor_table(&table);
-    logf(log_info, "Interrupts are initialized.\n");
+    logf(log_info, "Interrupts are initialized.");
 }
