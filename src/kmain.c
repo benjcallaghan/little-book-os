@@ -8,7 +8,7 @@
 #include "multiboot.h"
 #include "printf.h"
 
-constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN;
+constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN | MULTIBOOT_VIDEO_MODE;
 const struct multiboot_header header __attribute__((section(".multiboot"))) = {
     .magic = MULTIBOOT_HEADER_MAGIC,
     .flags = MULTIBOOT_FLAGS,
@@ -40,6 +40,12 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     logf(log_info, "Hello, world!");    
     logf(log_debug, "Bootloader flags %X", boot_info->flags);
+
+    if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
+    {
+	char const *cmdline = (char const *)boot_info->cmdline;
+    	logf(log_info, "Kernel booted with %s", cmdline);
+    }
 
     if ((boot_info->flags & MULTIBOOT_INFO_MODS) && boot_info->mods_count > 0)
     {
