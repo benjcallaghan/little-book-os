@@ -47,6 +47,12 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     	logf(log_info, "Kernel booted with %s", cmdline);
     }
 
+    if (boot_info->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
+    {
+	    char const *bootloader = (char const *)boot_info->boot_loader_name;
+	    logf(log_info, "Kernel booted by %s", bootloader);
+    }
+    
     if ((boot_info->flags & MULTIBOOT_INFO_MODS) && boot_info->mods_count > 0)
     {
         logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
