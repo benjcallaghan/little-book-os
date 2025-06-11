@@ -12,11 +12,19 @@ int vprintf(void (*write)(char), char const *format, va_list args)
             ++format;
             switch (*format)
             {
+            case 's':
+		    char const *s_arg = va_arg(args, char const *);
+		    for (; *s_arg != '\0'; ++s_arg)
+		    {
+			    write(*s_arg);
+			    ++bytes_written;
+		    }
+		    break;
             case 'X':
-                uint32_t arg = va_arg(args, uint32_t);
+                uint32_t u32_arg = va_arg(args, uint32_t);
                 for (int i = 28; i >= 0; i -= 4)
                 {
-                    int nibble = (arg >> i) & 0xF;
+                    int nibble = (u32_arg >> i) & 0xF;
                     char c = nibble < 10 ? nibble + '0' : nibble - 10 + 'A';
                     write(c);
                     ++bytes_written;
