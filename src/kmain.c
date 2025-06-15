@@ -39,8 +39,8 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     }
 
     serial_init_com1();
-    paging_initialize();
     segmentation_initialize();
+    paging_initialize();
 
     int error = keyboard_initialze();
     if (error)
