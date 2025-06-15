@@ -3,6 +3,7 @@
 #include "drivers/serial.h"
 #include "segmentation.h"
 #include "interrupts.h"
+#include "paging.h"
 #include "drivers/pic.h"
 #include "drivers/keyboard.h"
 #include "multiboot.h"
@@ -14,9 +15,9 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
     .flags = MULTIBOOT_FLAGS,
     .checksum = -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_FLAGS),
     .mode_type = 1, // EGA-standard text mode
-	.width = 0, // No preference
-	.height = 0, // No preference
-	.depth = 0, // Not applicable
+    .width = 0,     // No preference
+    .height = 0,    // No preference
+    .depth = 0,     // Not applicable
 };
 
 typedef uint32_t (*call_module_t)(void);
@@ -30,14 +31,15 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_FRAMEBUFFER_INFO)
     {
-	    framebuffer_initialize(boot_info);
+        framebuffer_initialize(boot_info);
     }
     else
     {
-	    framebuffer_clear(); // Hope that the default configuration works.
+        framebuffer_clear(); // Hope that the default configuration works.
     }
-    
-    serial_init_com1();    
+
+    serial_init_com1();
+    paging_initialize();
     segmentation_initialize();
 
     int error = keyboard_initialze();
@@ -53,16 +55,16 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
     {
-	char const *cmdline = (char const *)boot_info->cmdline;
-    	logf(log_info, "Kernel booted with %s", cmdline);
+        char const *cmdline = (char const *)boot_info->cmdline;
+        logf(log_info, "Kernel booted with %s", cmdline);
     }
 
     if (boot_info->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
     {
-	    char const *bootloader = (char const *)boot_info->boot_loader_name;
-	    logf(log_info, "Kernel booted by %s", bootloader);
+        char const *bootloader = (char const *)boot_info->boot_loader_name;
+        logf(log_info, "Kernel booted by %s", bootloader);
     }
-    
+
     if ((boot_info->flags & MULTIBOOT_INFO_MODS) && boot_info->mods_count > 0)
     {
         logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
