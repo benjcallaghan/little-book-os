@@ -63,11 +63,11 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     if ((boot_info->flags & MULTIBOOT_INFO_MODS) && boot_info->mods_count > 0)
     {
         logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
-        logf(log_debug, "Address of module structures %X", boot_info->mods_addr);
         struct multiboot_mod_list const *modules = virtualize_const((struct multiboot_mod_list const *)boot_info->mods_addr);
+        logf(log_debug, "Address of module structures %X", modules);
 
-        logf(log_debug, "Address of start of module %X", modules[0].mod_start);
         call_module_t program = virtualize((call_module_t)modules[0].mod_start);
+        logf(log_debug, "Address of start of module %X", program);
         uint32_t result = program();
         logf(log_info, "Boot Module Result: %X", result);
     }
