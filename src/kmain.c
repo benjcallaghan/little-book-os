@@ -30,17 +30,9 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     }
 
     // The pointers provided by GRUB are physical addresses. Each usage must be virtualized to work with higher-half paging.
-    boot_info = virtualize(boot_info);
+    boot_info = virtualize_const(boot_info);
 
-    if (boot_info->flags & MULTIBOOT_INFO_FRAMEBUFFER_INFO)
-    {
-        framebuffer_initialize(boot_info);
-    }
-    else
-    {
-        framebuffer_clear(); // Hope that the default configuration works.
-    }
-
+    framebuffer_initialize(boot_info->flags & MULTIBOOT_INFO_FRAMEBUFFER_INFO ? boot_info : nullptr);
     serial_init_com1();
     segmentation_initialize();
     // paging_initialize();
@@ -58,13 +50,13 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
     {
-        char const *cmdline = virtualize((char const *)boot_info->cmdline);
+        char const *cmdline = virtualize_const((char const *)boot_info->cmdline);
         logf(log_info, "Kernel booted with %s", cmdline);
     }
 
     if (boot_info->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
     {
-        char const *bootloader = virtualize((char const *)boot_info->boot_loader_name);
+        char const *bootloader = virtualize_const((char const *)boot_info->boot_loader_name);
         logf(log_info, "Kernel booted by %s", bootloader);
     }
 
@@ -72,7 +64,7 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     {
         logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
         logf(log_debug, "Address of module structures %X", boot_info->mods_addr);
-        struct multiboot_mod_list const *modules = virtualize((struct multiboot_mod_list const *)boot_info->mods_addr);
+        struct multiboot_mod_list const *modules = virtualize_const((struct multiboot_mod_list const *)boot_info->mods_addr);
 
         logf(log_debug, "Address of start of module %X", modules[0].mod_start);
         call_module_t program = virtualize((call_module_t)modules[0].mod_start);

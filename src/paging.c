@@ -81,7 +81,14 @@ void paging_initialize()
     logf(log_info, "Paging is initialized.");
 }
 
-void const *virtualize(void const *physical)
+void *virtualize(void *physical)
+{
+    constexpr uintptr_t virtual_higher_half = 0xC0000000;
+    uintptr_t physical_address = (uintptr_t)physical;
+    return (void *)(physical_address + virtual_higher_half);
+}
+
+void const *virtualize_const(void const *physical)
 {
     constexpr uintptr_t virtual_higher_half = 0xC0000000;
     uintptr_t physical_address = (uintptr_t)physical;

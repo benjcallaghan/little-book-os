@@ -1,4 +1,5 @@
 #pragma once
 
 void paging_initialize();
-void const *virtualize(void const *physical);
+void *virtualize(void *physical);
+void const *virtualize_const(void const *physical);
