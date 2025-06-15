@@ -63,6 +63,9 @@ end_page_table_loop:
     jmp edx
 
 higher_half:
+    ; Now that we're in the higher-half, we don't need the identity mapping in the first page directory entry.
+    mov DWORD [boot_page_directory], 0
+
     mov esp, kernel_stack + KERNEL_STACK_SIZE ; point esp to the start of the stack (end of memory area)
 
     push ebx ; Pointer to the multiboot structure
