@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 #include "logger.h"
 
 struct page_directory_entry
@@ -34,27 +35,45 @@ constexpr int page_size = 4096;
 static struct page_directory_entry kernel_page_directory[page_size] __attribute__((aligned(4096)));
 static struct page_table_entry identity_page_table_0[page_size] __attribute__((aligned(4096)));
 
+void identity_map_block(uintptr_t start_of_block)
+{
+    constexpr int last_10_bits = 0x3FF;
+    size_t table_index = (start_of_block >> 12) & last_10_bits;
+    size_t directory_index = (start_of_block >> 22) & last_10_bits;
+
+    // For now, we know that directory_index is always zero, so we can safely refer to page_table_0.
+    identity_page_table_0[table_index].is_present = true;
+    identity_page_table_0[table_index].is_writable = true;
+    identity_page_table_0[table_index].is_user = false;
+    identity_page_table_0[table_index].is_write_through = true;
+    identity_page_table_0[table_index].is_cache_disabled = false;
+    identity_page_table_0[table_index].is_accessed = false;
+    identity_page_table_0[table_index].is_dirty = false;
+    identity_page_table_0[table_index].has_attribute_table = false;
+    identity_page_table_0[table_index].is_global = false;
+    identity_page_table_0[table_index].frame_address = 0;
+
+    if (table_index == 0)
+    {
+        kernel_page_directory[directory_index].is_present = true;
+        kernel_page_directory[directory_index].is_writable = true;
+        kernel_page_directory[directory_index].is_user = false;
+        kernel_page_directory[directory_index].is_write_through = true;
+        kernel_page_directory[directory_index].is_cache_disabled = false;
+        kernel_page_directory[directory_index].is_accessed = false;
+        kernel_page_directory[directory_index].is_megabyte = false;
+        kernel_page_directory[directory_index].table_address = (uintptr_t)(&identity_page_table_0) >> 12;
+    }
+}
+
 void paging_initialize()
 {
-    identity_page_table_0[0].is_present = true;
-    identity_page_table_0[0].is_writable = true;
-    identity_page_table_0[0].is_user = false;
-    identity_page_table_0[0].is_write_through = true;
-    identity_page_table_0[0].is_cache_disabled = false;
-    identity_page_table_0[0].is_accessed = false;
-    identity_page_table_0[0].is_dirty = false;
-    identity_page_table_0[0].has_attribute_table = false;
-    identity_page_table_0[0].is_global = false;
-    identity_page_table_0[0].frame_address = 0;
+    constexpr int end_of_identity = 4 * 1024 * 1024; // 4MB arbitrarily chosen
 
-    kernel_page_directory[0].is_present = true;
-    kernel_page_directory[0].is_writable = true;
-    kernel_page_directory[0].is_user = false;
-    kernel_page_directory[0].is_write_through = true;
-    kernel_page_directory[0].is_cache_disabled = false;
-    kernel_page_directory[0].is_accessed = false;
-    kernel_page_directory[0].is_megabyte = false;
-    kernel_page_directory[0].table_address = (uintptr_t)(&identity_page_table_0) >> 12;
+    for (uintptr_t start_of_block = 0; start_of_block < end_of_identity; start_of_block += page_size)
+    {
+        identity_map_block(start_of_block);
+    }
 
     logf(log_info, "Paging is initialized.");
 }
