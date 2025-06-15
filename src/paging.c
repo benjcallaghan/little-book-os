@@ -1,20 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "logger.h"
-
-struct page_directory_entry
-{
-    bool is_present : true;
-    bool is_writable : true;
-    bool is_user : true;
-    bool is_write_through : true;
-    bool is_cache_disabled : true;
-    bool is_accessed : true;
-    bool : true;
-    bool is_megabyte : true;
-    uint8_t : 4;
-    uint32_t table_address : 20;
-} __attribute__((packed));
+#include "instructions/paging.h"
 
 struct page_table_entry
 {
@@ -51,7 +38,7 @@ void identity_map_block(uintptr_t start_of_block)
     identity_page_table_0[table_index].is_dirty = false;
     identity_page_table_0[table_index].has_attribute_table = false;
     identity_page_table_0[table_index].is_global = false;
-    identity_page_table_0[table_index].frame_address = 0;
+    identity_page_table_0[table_index].frame_address = start_of_block;
 
     if (table_index == 0)
     {
@@ -72,8 +59,10 @@ void paging_initialize()
 
     for (uintptr_t start_of_block = 0; start_of_block < end_of_identity; start_of_block += page_size)
     {
+        logf(log_debug, "Identity mapping block %X", start_of_block);
         identity_map_block(start_of_block);
     }
 
+    load_page_directory(kernel_page_directory);
     logf(log_info, "Paging is initialized.");
 }
