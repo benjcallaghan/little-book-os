@@ -22,12 +22,22 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
 
 typedef uint32_t (*call_module_t)(void);
 
+void const *virtualize(void const *physical)
+{
+    constexpr uintptr_t virtual_higher_half = 0xC0000000;
+    uintptr_t physical_address = (uintptr_t)physical;
+    return (void *)(physical_address + virtual_higher_half);
+}
+
 int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 {
     if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC)
     {
         return 1;
     }
+
+    // The pointers provided by GRUB are physical addresses. Each usage must be virtualized to work with higher-half paging.
+    boot_info = virtualize(boot_info);
 
     if (boot_info->flags & MULTIBOOT_INFO_FRAMEBUFFER_INFO)
     {
@@ -55,13 +65,13 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
     {
-        char const *cmdline = (char const *)boot_info->cmdline;
+        char const *cmdline = virtualize((char const *)boot_info->cmdline);
         logf(log_info, "Kernel booted with %s", cmdline);
     }
 
     if (boot_info->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
     {
-        char const *bootloader = (char const *)boot_info->boot_loader_name;
+        char const *bootloader = virtualize((char const *)boot_info->boot_loader_name);
         logf(log_info, "Kernel booted by %s", bootloader);
     }
 
@@ -69,10 +79,10 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     {
         logf(log_debug, "Number of boot modules %X", boot_info->mods_count);
         logf(log_debug, "Address of module structures %X", boot_info->mods_addr);
-        struct multiboot_mod_list *modules = (struct multiboot_mod_list *)boot_info->mods_addr;
+        struct multiboot_mod_list const *modules = virtualize((struct multiboot_mod_list const *)boot_info->mods_addr);
 
         logf(log_debug, "Address of start of module %X", modules[0].mod_start);
-        call_module_t program = (call_module_t)modules[0].mod_start;
+        call_module_t program = virtualize((call_module_t)modules[0].mod_start);
         uint32_t result = program();
         logf(log_info, "Boot Module Result: %X", result);
     }
