@@ -23,7 +23,7 @@ constexpr size_t page_table_size = 1024;
 static struct page_directory_entry kernel_page_directory[page_table_size] __attribute__((aligned(4096)));
 static struct page_table_entry identity_page_table_0[page_table_size] __attribute__((aligned(4096)));
 
-void identity_map_block(uintptr_t start_of_block)
+static void identity_map_block(uintptr_t start_of_block)
 {
     constexpr int last_10_bits = 0x3FF;
     size_t table_index = (start_of_block >> 12) & last_10_bits;
@@ -54,9 +54,21 @@ void identity_map_block(uintptr_t start_of_block)
     }
 }
 
+static void mark_all_pages_not_present()
+{
+    for (size_t i = 0; i < page_table_size; ++i)
+    {
+        identity_page_table_0[i].is_present = false;
+        kernel_page_directory[i].is_present = false;
+    }
+}
+
 void paging_initialize()
 {
     constexpr int end_of_identity = 4 * 1024 * 1024; // 4MB arbitrarily chosen
+
+    mark_all_pages_not_present(); // in case something tries to load an unmapped entry.
+    // This way, a page fault is generated rather than accessing unmapped memory.
 
     for (uintptr_t start_of_block = 0; start_of_block < end_of_identity; start_of_block += page_size)
     {
