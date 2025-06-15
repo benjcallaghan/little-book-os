@@ -18,9 +18,10 @@ struct page_table_entry
     uint32_t frame_address : 20;
 } __attribute__((packed));
 
-constexpr int page_size = 4096;
-static struct page_directory_entry kernel_page_directory[page_size] __attribute__((aligned(4096)));
-static struct page_table_entry identity_page_table_0[page_size] __attribute__((aligned(4096)));
+constexpr size_t page_size = 4096;
+constexpr size_t page_table_size = 1024;
+static struct page_directory_entry kernel_page_directory[page_table_size] __attribute__((aligned(4096)));
+static struct page_table_entry identity_page_table_0[page_table_size] __attribute__((aligned(4096)));
 
 void identity_map_block(uintptr_t start_of_block)
 {
