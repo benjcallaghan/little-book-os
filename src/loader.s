@@ -1,8 +1,11 @@
 global loader ; the entry symbol for ELF
+extern kmain ; the function kmain is defined elsewhere
+
 KERNEL_STACK_SIZE equ 4096 ; size of stack in bytes
 PAGE_SIZE equ 4096
 END_OF_IDENTITY equ 4 * 1024 * 1024 ; identity map the first 4 MB
-extern kmain ; the function kmain is defined elsewhere
+VIRTUAL_HIGHER_HALF equ 0xC0000000
+VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX equ 0x300
 
 section .note.GNU-stack noalloc noexec nowrite progbits ; disables execution from the stack
 
@@ -39,10 +42,14 @@ start_page_table_loop:
 
 end_page_table_loop:
     ; Add one entry to the page directory, pointing to boot_page_table
-    mov edi, boot_page_directory
     mov edx, boot_page_table
     or edx, 0x0000000B ; set is_present, is_writable, and is_write_through
-    mov [edi], edx
+    mov [boot_page_directory], edx
+
+    ; Add a second entry to the page directory, mapping higher half to boot_page_table
+    mov edx, boot_page_table
+    or edx, 0x0000000B ; set is_present, is_writable, and is_write_through
+    mov [boot_page_directory + VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX], edx
     
     ; Point the CPU to the page directory
     mov edx, boot_page_directory
