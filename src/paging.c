@@ -80,3 +80,10 @@ void paging_initialize()
     load_page_directory(kernel_page_directory);
     logf(log_info, "Paging is initialized.");
 }
+
+void const *virtualize(void const *physical)
+{
+    constexpr uintptr_t virtual_higher_half = 0xC0000000;
+    uintptr_t physical_address = (uintptr_t)physical;
+    return (void *)(physical_address + virtual_higher_half);
+}

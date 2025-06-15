@@ -22,13 +22,6 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
 
 typedef uint32_t (*call_module_t)(void);
 
-void const *virtualize(void const *physical)
-{
-    constexpr uintptr_t virtual_higher_half = 0xC0000000;
-    uintptr_t physical_address = (uintptr_t)physical;
-    return (void *)(physical_address + virtual_higher_half);
-}
-
 int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 {
     if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC)
