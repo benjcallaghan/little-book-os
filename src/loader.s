@@ -3,7 +3,7 @@ extern kmain ; the function kmain is defined elsewhere
 
 KERNEL_STACK_SIZE equ 4096 ; size of stack in bytes
 PAGE_SIZE equ 4096
-END_OF_IDENTITY equ 4 * 1024 * 1024 ; identity map the first 4 MB
+PAGE_TABLE_SIZE equ 1024
 VIRTUAL_HIGHER_HALF equ 0xC0000000
 VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX equ 0x300
 
@@ -23,13 +23,14 @@ section .text ; start of the text (code) section
 align 4 ; the code must be 4 byte aligned
 loader: ; the loader label (defined as entry point in linker script)
     ; Avoid using registers eax and ebx until the call to kmain, to avoid trampling the GRUB multiboot structures.
+    ; All addresses used before the higher_half label need to be de-virtualized before use.
 
     ; Initialize all entries in boot_page_table with identity mapping
-    mov edi, boot_page_table
+    mov edi, (boot_page_table - VIRTUAL_HIGHER_HALF)
     mov ecx, 0
 
 start_page_table_loop:
-    cmp ecx, END_OF_IDENTITY
+    cmp ecx, (PAGE_TABLE_SIZE * PAGE_SIZE)
     jge end_page_table_loop
 
     mov edx, ecx
@@ -42,17 +43,15 @@ start_page_table_loop:
 
 end_page_table_loop:
     ; Add one entry to the page directory, pointing to boot_page_table
-    mov edx, boot_page_table
+    mov edx, (boot_page_table - VIRTUAL_HIGHER_HALF)
     or edx, 0x0000000B ; set is_present, is_writable, and is_write_through
-    mov [boot_page_directory], edx
+    mov [boot_page_directory - VIRTUAL_HIGHER_HALF], edx
 
     ; Add a second entry to the page directory, mapping higher half to boot_page_table
-    mov edx, boot_page_table
-    or edx, 0x0000000B ; set is_present, is_writable, and is_write_through
-    mov [boot_page_directory + VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX], edx
+    mov [boot_page_directory - VIRTUAL_HIGHER_HALF + VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX*4], edx
     
     ; Point the CPU to the page directory
-    mov edx, boot_page_directory
+    mov edx, (boot_page_directory - VIRTUAL_HIGHER_HALF)
     mov cr3, edx
 
     ; Enable paging and protection
@@ -60,6 +59,10 @@ end_page_table_loop:
     or edx, 0x80000001
     mov cr0, edx
 
+    mov edx, higher_half
+    jmp edx
+
+higher_half:
     mov esp, kernel_stack + KERNEL_STACK_SIZE ; point esp to the start of the stack (end of memory area)
 
     push ebx ; Pointer to the multiboot structure
