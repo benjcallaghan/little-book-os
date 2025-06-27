@@ -1,7 +1,6 @@
 global loader ; the entry symbol for ELF
 extern kmain ; the function kmain is defined elsewhere
 
-KERNEL_STACK_SIZE equ 4096 ; size of stack in bytes
 PAGE_SIZE equ 4096
 PAGE_TABLE_SIZE equ 1024
 VIRTUAL_HIGHER_HALF equ 0xC0000000
@@ -10,10 +9,9 @@ VIRTUAL_HIGHER_HALF_DIRECTORY_INDEX equ 0x300
 section .note.GNU-stack noalloc noexec nowrite progbits ; disables execution from the stack
 
 section .bss
-align 4 ; align at 4 bytes
-kernel_stack: ; label points to beginning of memory
-    resb KERNEL_STACK_SIZE ; reserve stack for the kernel
 align PAGE_SIZE ; align at 1 page
+kernel_stack: ; label points to beginning of memory
+    resb PAGE_SIZE ; reserve stack for the kernel
 boot_page_directory:
     resb PAGE_SIZE
 boot_page_table:
@@ -66,7 +64,7 @@ higher_half:
     ; Now that we're in the higher-half, we don't need the identity mapping in the first page directory entry.
     mov DWORD [boot_page_directory], 0
 
-    mov esp, kernel_stack + KERNEL_STACK_SIZE ; point esp to the start of the stack (end of memory area)
+    mov esp, kernel_stack + PAGE_SIZE ; point esp to the start of the stack (end of memory area)
 
     push ebx ; Pointer to the multiboot structure
     push eax ; Bootloader magic number
