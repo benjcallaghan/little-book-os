@@ -9,7 +9,7 @@
 #include "multiboot.h"
 #include "printf.h"
 
-constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN | MULTIBOOT_VIDEO_MODE;
+constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEMORY_INFO | MULTIBOOT_VIDEO_MODE;
 const struct multiboot_header header __attribute__((section(".multiboot"))) = {
     .magic = MULTIBOOT_HEADER_MAGIC,
     .flags = MULTIBOOT_FLAGS,
@@ -47,6 +47,12 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     interrupts_initialize();
 
     logf(log_debug, "Bootloader flags %X", boot_info->flags);
+
+    if (boot_info->flags & MULTIBOOT_INFO_MEMORY)
+    {
+        logf(log_debug, "Lower Memory %X KB", boot_info->mem_lower);
+        logf(log_info, "Upper Memory %X KB", boot_info->mem_upper);
+    }
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
     {
