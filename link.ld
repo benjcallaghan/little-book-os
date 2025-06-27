@@ -6,6 +6,8 @@ HIDDEN(hardware_end = 0x100000); /* 1 MB */
 
 SECTIONS {
   . = virtual_higher_half + hardware_end; /* Move to the higher half, but leave room for BIOS and GRUB. */
+  kernel_virtual_start = .;
+  kernel_physical_start = . - virtual_higher_half;
 
   .text ALIGN (page_size) : AT(ADDR(.text) - virtual_higher_half)
   {
@@ -28,4 +30,7 @@ SECTIONS {
     *(COMMON) /* all COMMON sections from all files */
     *(.bss) /* all bss sections from all files */
   }
+
+  kernel_virtual_end = .;
+  kernel_physical_end = . - virtual_higher_half;
 }

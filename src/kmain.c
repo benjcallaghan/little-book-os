@@ -23,6 +23,12 @@ const struct multiboot_header header __attribute__((section(".multiboot"))) = {
 
 typedef uint32_t (*call_module_t)(void);
 
+// Linker defined symbols. The address is more interesting than the value.
+char kernel_virtual_start[0];
+char kernel_physical_start[0];
+char kernel_virtual_end[0];
+char kernel_physical_end[0];
+
 int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 {
     if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC)
@@ -93,6 +99,9 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
         uint32_t result = program();
         logf(log_info, "Boot Module Result: %X", result);
     }
+
+    logf(log_debug, "Kernel consumes memory range %X-%X", kernel_virtual_start, kernel_virtual_end);
+    logf(log_debug, "Kernel consumes memory range %X-%X (Physical)", kernel_physical_start, kernel_physical_end);
 
     return 0xCAFEBABE;
 }
