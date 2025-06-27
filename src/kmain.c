@@ -8,6 +8,7 @@
 #include "drivers/keyboard.h"
 #include "multiboot.h"
 #include "printf.h"
+#include <stddef.h>
 
 constexpr uint32_t MULTIBOOT_FLAGS = MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEMORY_INFO | MULTIBOOT_VIDEO_MODE;
 const struct multiboot_header header __attribute__((section(".multiboot"))) = {
@@ -58,6 +59,19 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
     {
         char const *cmdline = virtualize_const((char const *)boot_info->cmdline);
         logf(log_info, "Kernel booted with %s", cmdline);
+    }
+
+    if (boot_info->flags & MULTIBOOT_INFO_MEM_MAP)
+    {
+        logf(log_debug, "Number of memory map entries %u", boot_info->mmap_length);
+        logf(log_debug, "Memory map buffer starts at %X (physical)", boot_info->mmap_addr);
+
+        struct multiboot_mmap_entry const *mem_map = virtualize_const((struct multiboot_mmap_entry const *)boot_info->mmap_addr);
+        for (size_t i = 0; i < boot_info->mmap_length; ++i)
+        {
+            struct multiboot_mmap_entry const entry = mem_map[i];
+            logf(log_debug, "Memory region at %X of size %u B has type %u", entry.addr, entry.len, entry.type);
+        }
     }
 
     if (boot_info->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)

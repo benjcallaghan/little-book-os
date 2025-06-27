@@ -3,8 +3,8 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 SOURCES := $(call rwildcard,src,*.c *.s)
 OBJECTS := $(addsuffix .o,$(basename $(SOURCES)))
 CC := gcc
-CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -std=c2x
-LDFLAGS := -T link.ld -melf_i386
+CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -Wall -Wextra -Werror -std=c2x
+LDFLAGS := -T link.ld -melf_i386 -l $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 AS := nasm
 ASFLAGS := -f elf
 
