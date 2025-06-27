@@ -24,7 +24,7 @@ int vprintf(void (*write)(char), char const *format, va_list args)
             }
             case 'X':
             {
-                uint64_t arg = va_arg(args, uint64_t);
+                uint32_t arg = va_arg(args, uint32_t);
                 for (int i = 28; i >= 0; i -= 4)
                 {
                     int nibble = (arg >> i) & 0xF;
@@ -40,6 +40,7 @@ int vprintf(void (*write)(char), char const *format, va_list args)
                 switch (*format)
                 {
                 case 'u':
+                {
                     uint64_t arg = va_arg(args, uint64_t);
                     char buf[sizeof arg * __CHAR_BIT__ / 3 + 2]; // Slightly oversized buffer
                     char *buf_end = buf + sizeof buf - 1;
@@ -58,6 +59,19 @@ int vprintf(void (*write)(char), char const *format, va_list args)
                     }
 
                     break;
+                }
+                case 'X':
+                {
+                    uint64_t arg = va_arg(args, uint64_t);
+                    for (int i = 60; i >= 0; i -= 4)
+                    {
+                        int nibble = (arg >> i) & 0xF;
+                        char c = nibble < 10 ? nibble + '0' : nibble - 10 + 'A';
+                        write(c);
+                        ++bytes_written;
+                    }
+                    break;
+                }
                 }
                 break;
             }
