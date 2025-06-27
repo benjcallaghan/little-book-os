@@ -4,6 +4,27 @@ Developed by following [The little book about OS development](https://littleosbo
 
 Developed using Windows 10 + WSL + Ubuntu 24.04.
 
+## Prequisites
+
+```bash
+sudo apt install \
+build-essential \
+bison \
+flex \
+libgmp3-dev \
+libmpc-dev \
+libmpfr-dev \
+texinfo \
+libisl-dev
+```
+
+## First-time Setup
+
+The version of GCC installed as part of `build-essential` targets the current operating system (the one used for development). It does not match the operating system I am building here, so I need to build my own GCC first.
+```bash
+./build-cross-compiler.sh
+```
+
 ## Bochs
 
 Use `display_library: sdl2` instead of `display_library: sdl`. https://stackoverflow.com/questions/63159511/bochs-display-library-sdl-not-available

@@ -36,7 +36,7 @@ int vprintf(void (*write)(char), char const *format, va_list args)
             }
             case 'u':
             {
-                uint64_t arg = va_arg(args, uint64_t);
+                uint32_t arg = va_arg(args, uint32_t);
                 char buf[sizeof arg * __CHAR_BIT__ / 3 + 2]; // Slightly oversized buffer
                 char *buf_end = buf + sizeof buf - 1;
                 char *result = buf_end;

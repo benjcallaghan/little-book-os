@@ -2,9 +2,11 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 
 SOURCES := $(call rwildcard,src,*.c *.s)
 OBJECTS := $(addsuffix .o,$(basename $(SOURCES)))
-CC := gcc
+CC := ./opt/cross/bin/i686-elf-gcc
 CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -Wall -Wextra -Werror -std=c2x
-LDFLAGS := -T link.ld -melf_i386 -l $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
+LIBGCC := $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
+LD := ./opt/cross/bin/i686-elf-ld
+LDFLAGS := -T link.ld
 AS := nasm
 ASFLAGS := -f elf
 
@@ -12,7 +14,7 @@ ASFLAGS := -f elf
 all: kernel.elf
 
 kernel.elf: $(OBJECTS) link.ld
-	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
+	$(LD) $(LDFLAGS) $(OBJECTS) -o kernel.elf
 
 os.iso: kernel.elf
 	cp kernel.elf iso/boot/kernel.elf

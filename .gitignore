@@ -12,3 +12,8 @@ iso/modules
 
 # VIM temp files
 *.swp
+
+# Build tooling
+build-binutils/
+build-gcc/
+opt/
