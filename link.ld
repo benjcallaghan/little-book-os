@@ -7,13 +7,9 @@ HIDDEN(hardware_end = 0x100000); /* 1 MB */
 SECTIONS {
   . = virtual_higher_half + hardware_end; /* Move to the higher half, but leave room for BIOS and GRUB. */
 
-  .multiboot ALIGN (page_size) : AT(ADDR(.multiboot) - virtual_higher_half)
-  {
-    *(.multiboot)
-  }
-
   .text ALIGN (page_size) : AT(ADDR(.text) - virtual_higher_half)
   {
+    *(.multiboot)
     *(.text) /* all text sections from all files */
   }
 
