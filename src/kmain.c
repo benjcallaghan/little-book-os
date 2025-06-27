@@ -50,8 +50,8 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_MEMORY)
     {
-        logf(log_debug, "Lower Memory %X KB", boot_info->mem_lower);
-        logf(log_info, "Upper Memory %X KB", boot_info->mem_upper);
+        logf(log_info, "Amount of Lower Memory %u KB", boot_info->mem_lower);
+        logf(log_info, "Amount of Upper Memory %u KB", boot_info->mem_upper);
     }
 
     if (boot_info->flags & MULTIBOOT_INFO_CMDLINE)
