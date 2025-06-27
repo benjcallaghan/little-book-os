@@ -63,14 +63,16 @@ int kmain(uint32_t bootloader_magic, struct multiboot_info const *boot_info)
 
     if (boot_info->flags & MULTIBOOT_INFO_MEM_MAP)
     {
-        logf(log_debug, "Number of memory map entries %u", boot_info->mmap_length);
+        logf(log_debug, "Size of memory map entries %u B", boot_info->mmap_length);
         logf(log_debug, "Memory map buffer starts at %X (physical)", boot_info->mmap_addr);
 
         struct multiboot_mmap_entry const *mem_map = virtualize_const((struct multiboot_mmap_entry const *)boot_info->mmap_addr);
-        for (size_t i = 0; i < boot_info->mmap_length; ++i)
+        size_t mmap_size = boot_info->mmap_length / sizeof(struct multiboot_mmap_entry);
+
+        for (size_t i = 0; i < mmap_size; ++i)
         {
             struct multiboot_mmap_entry const entry = mem_map[i];
-            logf(log_debug, "Memory region at %X of size %u B has type %u", entry.addr, entry.len, entry.type);
+            logf(log_debug, "Memory region at %X of size %lu B has type %u", entry.addr, entry.len, entry.type);
         }
     }
 

@@ -6,7 +6,8 @@ CC := ./opt/cross/bin/i686-elf-gcc
 CFLAGS := -m32 -nostdlib -ffreestanding -fno-stack-protector -Wall -Wextra -Werror -std=c2x
 LIBGCC := $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 LD := ./opt/cross/bin/i686-elf-ld
-LDFLAGS := -T link.ld -L $(dir $(LIBGCC)) -l gcc
+LDFLAGS := -T link.ld 
+LIBS = -L $(dir $(LIBGCC)) -l gcc
 AS := nasm
 ASFLAGS := -f elf
 
@@ -14,7 +15,7 @@ ASFLAGS := -f elf
 all: kernel.elf
 
 kernel.elf: $(OBJECTS) link.ld
-	$(LD) $(LDFLAGS) $(OBJECTS) -o kernel.elf
+	$(LD) $(LDFLAGS) $(OBJECTS) -o kernel.elf $(LIBS)
 
 os.iso: kernel.elf
 	cp kernel.elf iso/boot/kernel.elf

@@ -34,6 +34,33 @@ int vprintf(void (*write)(char), char const *format, va_list args)
                 }
                 break;
             }
+            case 'l':
+            {
+                ++format;
+                switch (*format)
+                {
+                case 'u':
+                    uint64_t arg = va_arg(args, uint64_t);
+                    char buf[sizeof arg * __CHAR_BIT__ / 3 + 2]; // Slightly oversized buffer
+                    char *buf_end = buf + sizeof buf - 1;
+                    char *result = buf_end;
+
+                    do
+                    {
+                        *--result = '0' + (arg % 10);
+                        arg /= 10;
+                    } while (arg);
+
+                    for (; result != buf_end; ++result)
+                    {
+                        write(*result);
+                        ++bytes_written;
+                    }
+
+                    break;
+                }
+                break;
+            }
             case 'u':
             {
                 uint32_t arg = va_arg(args, uint32_t);
@@ -41,7 +68,8 @@ int vprintf(void (*write)(char), char const *format, va_list args)
                 char *buf_end = buf + sizeof buf - 1;
                 char *result = buf_end;
 
-                do {
+                do
+                {
                     *--result = '0' + (arg % 10);
                     arg /= 10;
                 } while (arg);
